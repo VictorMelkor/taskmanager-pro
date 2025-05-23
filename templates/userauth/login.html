@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+
+{% block content %}
+<div class="container">
+    <h2>Login</h2>
+
+    {% include 'includes/messages.html' %}
+
+    <form method="POST" action="{% url 'userauth:login' %}">
+        {% csrf_token %}
+
+        {{ form.login.label_tag }}
+        {{ form.login }}
+        {{ form.login.errors }}
+
+        <div class="password-wrapper">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            <span class="toggle-password" onclick="togglePassword(this)">👁️</span>
+            {{ form.password.errors }}
+        </div>
+        
+        <button type="submit">Entrar</button>
+    </form>
+
+    <div class="divider"><span>ou</span></div>
+
+    <div class="social-login">
+        <a href="{% provider_login_url 'google' %}" class="social-btn google">Entrar com Google</a> 
+        <a href="{% provider_login_url 'facebook' %}" class="social-btn facebook">Entrar com Facebook</a> 
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 400px;
+        margin: 60px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .container h2 {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+    .container label {
+        display: block;
+        margin-top: 12px;
+        font-weight: bold;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #3182ce;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #2b6cb0;
+    }
+    .password-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    .password-wrapper input {
+        padding-right: 35px;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        user-select: none;
+        font-size: 18px;
+        color: #666;
+    }
+    .toggle-password:hover {
+        color: #3182ce;
+    }
+    .divider {
+        text-align: center;
+        margin: 24px 0;
+        position: relative;
+    }
+    .divider::before,
+    .divider::after {
+        content: "";
+        height: 1px;
+        background: #ccc;
+        position: absolute;
+        top: 50%;
+        width: 40%;
+    }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+    .divider span {
+        background: #fff;
+        padding: 0 12px;
+        font-weight: bold;
+        color: #666;
+    }
+    .social-login {
+        text-align: center;
+    }
+    .social-btn {
+        display: block;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        text-decoration: none;
+        color: white;
+    }
+    .google { background-color: #db4437; }
+    .facebook { background-color: #4267B2; }
+    .social-btn:hover { opacity: 0.9; }
+</style>
+
+<script>
+function togglePassword(element) {
+    const wrapper = element.parentElement;
+    const input = wrapper.querySelector('input');
+    if (input.type === "password") {
+        input.type = "text";
+        element.textContent = "🙈";
+    } else {
+        input.type = "password";
+        element.textContent = "👁️";
+    }
+}
+</script>
+{% endblock %}

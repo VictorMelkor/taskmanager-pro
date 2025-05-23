@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskManager Pro</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        body {
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+        .main-content {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .main-content h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .main-content p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .buttons a {
+            padding: 14px 28px;
+            background-color: #3182ce;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .buttons a:hover {
+            background-color: #2b6cb0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        {% include 'includes/navbar.html' %}
+    </header>
+
+    {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' %}
+        {% include 'includes/messages.html' %}
+    {% endif %}
+
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include 'includes/footer.html' %}
+</body>
+</html>

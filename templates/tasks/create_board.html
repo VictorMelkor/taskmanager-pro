@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main style="padding: 40px; min-height: 100vh; background-color: #f0f2f5; display: flex; justify-content: center; align-items: flex-start;">
+
+  <div style="
+    background: white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 420px;
+  ">
+    <h1 style="margin-bottom: 24px; font-weight: 700; font-size: 1.8rem; color: #333; text-align: center;">Criar Novo Board</h1>
+
+    <form method="post" style="display: flex; flex-direction: column; gap: 24px;">
+      {% csrf_token %}
+
+      <div>
+        {{ form.title.label_tag }}
+        {{ form.title }}
+        {% if form.title.errors %}
+          <div style="color: #d93025; font-size: 0.9rem; margin-top: 4px;">
+            {{ form.title.errors }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div>
+        <label style="font-weight: 600; color: #555;">Cor do Board</label>
+        <div style="display: flex; gap: 12px; margin-top: 12px;">
+          {% for radio in form.color %}
+            <label style="cursor: pointer; position: relative;">
+              {{ radio.tag }}
+              <div style="
+                width: 44px;
+                height: 44px;
+                border-radius: 8px;
+                background-color: '{{ radio.choice_value }}';
+                border: 3px solid {% if radio.choice_value == form.color.value %}#007bff{% else %}transparent{% endif %};
+                box-sizing: border-box;
+                transition: border-color 0.3s ease;
+              "></div>
+            </label>
+          {% endfor %}
+        </div>
+        {% if form.color.errors %}
+          <div style="color: #d93025; font-size: 0.9rem; margin-top: 4px;">
+            {{ form.color.errors }}
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="submit" style="
+        background-color: #007bff;
+        color: white;
+        padding: 14px 0;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      " onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#007bff'">
+        Criar
+      </button>
+    </form>
+  </div>
+
+</main>
+
+<style>
+  /* Estilo para o input title */
+  input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus, input[type="search"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="tel"]:focus, input[type="password"]:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  /* Esconde os inputs radio mas mantém clicáveis */
+  input[type="radio"] {
+    display: none;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<style>
+.messages {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 0 16px;
+}
+.message {
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+}
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.message.error {
+    background-color: #ffe0e0;
+    color: #a94442;
+    border: 1px solid #f5c6cb;
+}
+.message.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+</style>

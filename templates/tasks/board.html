@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body style="margin: 0; font-family: Arial, sans-serif; background-color: #f0f2f5;">
+
+    
+
+    <!-- Conteúdo principal -->
+    <main style="padding: 20px;">
+
+        <!-- Botão de adicionar nova tarefa -->
+        <div style="text-align: right; margin-bottom: 20px;">
+            <button>+ Nova Tarefa</button>
+        </div>
+
+        <!-- Colunas -->
+        <div class="columns" style="display: flex; gap: 20px;">
+            {% if columns %}
+                {% for column in columns %}
+                    <div class="column" style="flex: 1; background-color: white; border: 1px solid #ccc; border-radius: 8px; padding: 15px;">
+                        <h3>{{ column.name }}</h3>
+                        {% if column.tasks.all %}
+                            {% for task in column.tasks.all %}
+                                <div class="task" style="margin-bottom: 10px; padding: 10px; background-color: #e0e0e0; border-radius: 4px;">
+                                    <strong>{{ task.title }}</strong><br>
+                                    <span>{{ task.description }}</span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color: gray;">Nenhuma tarefa.</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Colunas fixas se banco estiver vazio -->
+                <div class="column" style="flex: 1; background-color: white; border: 1px solid #ccc; border-radius: 8px; padding: 15px;">
+                    <h3>A Fazer</h3>
+                    <p style="color: gray;">Nenhuma tarefa.</p>
+                </div>
+                <div class="column" style="flex: 1; background-color: white; border: 1px solid #ccc; border-radius: 8px; padding: 15px;">
+                    <h3>Em Andamento</h3>
+                    <p style="color: gray;">Nenhuma tarefa.</p>
+                </div>
+                <div class="column" style="flex: 1; background-color: white; border: 1px solid #ccc; border-radius: 8px; padding: 15px;">
+                    <h3>Concluído</h3>
+                    <p style="color: gray;">Nenhuma tarefa.</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </main>
+
+</body>
+{% endblock %}

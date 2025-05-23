@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main style="padding: 40px; background-color: #f0f2f5; min-height: 100vh;">
+
+    <h1 style="font-size: 2rem; margin-bottom: 15px;">Meus Boards</h1>
+    {% if not boards %}
+        <p style="color: #666; margin-bottom: 30px;">Você ainda não tem nenhum board criado.</p>
+    {% endif %}
+
+    <ul style="list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 20px;">
+    
+    <!-- Botão de criar novo board -->
+    <li style="
+        width: 250px; 
+        height: 250px; 
+        background-color: white; 
+        border-radius: 12px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        cursor: pointer;
+        ">
+        <a href="{% url 'tasks:create_board' %}" 
+            style="text-decoration: none; color: #007bff; font-weight: bold; font-size: 1.5rem; text-align: center; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            + Criar Novo Board
+        </a>
+    </li>
+
+    {% for board in boards %}
+    <li style="
+        width: 250px; 
+        height: 250px; 
+        background-color: {{ board.color|default:'#fff' }}; 
+        border-radius: 12px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        cursor: pointer;
+        ">
+        <a href="{% url 'tasks:board' board.id %}" 
+            style="display: block; width: 100%; height: 100%; padding: 20px; 
+                    color: #333; font-weight: bold; font-size: 1.3rem; text-decoration: none;">
+            {{ board.title }}
+        </a>
+        </li>
+        {% endfor %}
+    </ul>
+
+</main>
+{% endblock %}

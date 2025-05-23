@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Lista de Tarefas</h1>
+    <ul>
+    {% for task in tasks %}
+        <li>{{ task.title }} ({{ task.column.name }})</li>
+    {% empty %}
+        <li>Sem tarefas cadastradas.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
