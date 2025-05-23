@@ -25,12 +25,4 @@
 
 ---
 
-## 📁 Estrutura Geral
-taskmanager-pro/
-├── core/ # Configurações e base do projeto
-├── userauth/ # Registro e login de usuários
-├── pages/ # Páginas públicas e estáticas
-├── tasks/ # Lógica dos boards, colunas e tarefas
-├── templates/ # Templates HTML globais
-├── static/ # Arquivos CSS/JS globais (em breve)
-└── manage.py
+
