@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Página Inicial - TaskManager Pro{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <p class="main-text">
+        Simplifique sua produtividade: gerencie suas tarefas e projetos com facilidade e eficiência.
+    </p>
+
+    {% if not user.is_authenticated %}
+        <div class="button-group">
+            <a href="{% url 'login' %}" class="btn btn-login">Entrar</a>
+            <a href="{% url 'signup' %}" class="btn btn-signup">Criar Conta</a>
+        </div>
+    {% else %}
+        <a href="{% url 'dashboard' %}" class="btn btn-login">Ir para o Painel</a>
+    {% endif %}
+</div>
+{% endblock %}

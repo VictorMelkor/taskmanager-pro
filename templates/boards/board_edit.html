@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Editar Board "{{ board.name }}"</h1>
+
+<form method="post" action="">
+    {% csrf_token %}
+    {{ board_form.as_p }}
+    <button type="submit" name="save_board" class="bg-blue-500 text-white px-4 py-2 rounded">Salvar alterações</button>
+</form>
+
+<hr/>
+
+<h2>Membros</h2>
+<ul>
+    {% for member in members %}
+        <li>
+            {{ member.member.username }} - {{ member.permission }}
+            {% if member.permission != 'owner' %}
+                <form method="post" action="" style="display:inline;" onsubmit="return confirm('Deseja mesmo {% if member.member == request.user %}sair do board{% else %}remover este membro{% endif %}?');">
+                    {% csrf_token %}
+                    <button type="submit" name="remove_member" value="{{ member.id }}"
+                        class="text-red-600 underline bg-transparent border-0 cursor-pointer">
+                        {% if member.member == request.user %}Sair do board{% else %}Remover{% endif %}
+                    </button>
+                </form>
+            {% endif %}
+        </li>
+    {% empty %}
+        <li>Sem membros ainda.</li>
+    {% endfor %}
+</ul>
+
+<hr/>
+
+<h2>Gerar link de convite</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ invite_form.as_p }}
+    <button type="submit" name="create_invite" class="btn">
+        Gerar link de convite (válido por 7 dias)
+    </button>
+</form>
+
+{% if invite_link %}
+    <p>Link de convite: <a href="{{ invite_link }}">{{ invite_link }}</a></p>
+{% endif %}
+
+{% if messages %}
+    {% for message in messages %}
+        <p class="mt-4 text-green-700">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<a href="{% url 'dashboard' %}" class="text-blue-500 hover:underline mt-6 block">← Voltar ao painel</a>
+{% endblock %}

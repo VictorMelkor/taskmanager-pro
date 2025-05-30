@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Bem-vindo, {{ request.user.get_full_name|default:request.user.username }}</h1>
+
+<a href="{% url 'board_create' %}">Criar novo quadro</a>
+
+<h2>Seus Quadros</h2>
+<ul>
+  {% for board in boards %}
+    <li>
+      <strong>{{ board.name }}</strong><br>
+      {{ board.description }}<br>
+      Criado em: {{ board.created_at|date:"d/m/Y" }}
+      {% if board.slug %}
+        <a href="{% url 'board_detail' username=board.created_by.username slug=board.slug %}">Ver quadro</a>
+      {% else %}
+        <!-- Slug não definido -->
+        <span>Quadro sem link</span>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>Você ainda não tem quadros.</li>
+  {% endfor %}
+</ul>
+
+<!-- Reservado para configurações futuras -->
+{% endblock %}

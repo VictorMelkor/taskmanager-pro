@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Convite para participar do quadro "{{ object.board.name }}"</h2>
+
+  {% if invalid_invite %}
+    <p class="text-red-600 font-bold">Este convite não é mais válido.</p>
+  {% else %}
+    <p>Você foi convidado a participar do quadro "{{ object.board.name }}" criado por {{ object.invited_by.username }}.</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+        Aceitar convite
+      </button>
+    </form>
+  {% endif %}
+
+  <a href="{% url 'dashboard' %}" class="text-blue-500 underline mt-4 block">Voltar para dashboard</a>
+{% endblock %}

@@ -1,0 +1,24 @@
+<nav>
+    <div class="nav-left">
+        <h1>TaskManager Pro</h1>
+    </div>
+    <ul class="nav-right">
+    {% if user.is_authenticated %}
+        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:600; font-size:16px;">Sair</button>
+            </form>
+        </li>
+    {% else %}
+        {% if request.path == '/auth/login/' %}
+            <li><a href="{% url 'home' %}">Home</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Entrar</a></li>
+            <li><a href="{% url 'signup' %}">Criar Conta</a></li>
+        {% endif %}
+    {% endif %}
+</ul>
+
+</nav>

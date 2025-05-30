@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Tem certeza que deseja excluir o board "{{ board.name }}"?</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="text-red-500">Sim, excluir</button>
+    </form>
+
+    <a href="{% url 'board_edit' username=board.created_by.username slug=board.slug %}">Cancelar</a><br>
+    <a href="{% url 'board_detail' username=board.created_by.username slug=board.slug %}">Voltar para o quadro</a>
+{% endblock %}

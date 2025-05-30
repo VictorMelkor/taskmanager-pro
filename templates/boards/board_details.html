@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>{{ board.name }}</h1>
+<p>{{ board.description }}</p>
+<p>Criado por: {{ board.created_by.get_full_name }}</p>
+<p>Data de criação: {{ board.created_at|date:"d/m/Y H:i" }}</p>
+
+<h2>Colunas</h2>
+<ul>
+    {% if columns %}
+        {% for column in columns %}
+        <li data-column-id="{{ column.id }}">
+            <span class="column-name"
+                data-column-id="{{ column.id }}"
+                data-username="{{ board.created_by.username }}"
+                data-slug="{{ board.slug }}"
+                style="cursor:pointer;">
+                {{ column.name }}
+            </span>
+            <button class="delete-btn" data-column-id="{{ column.id }}">Excluir</button>
+        </li>
+        {% endfor %}
+    {% else %}
+        <li>Nenhuma coluna cadastrada.</li>
+    {% endif %}
+</ul>
+
+<a href="{% url 'add_column' board.created_by.username board.slug %}">Adicionar nova coluna</a><br>
+{% for member in board.boardmember_set.all %}
+    {% if member.member == request.user and member.permission in 'owner,moderator' %}
+        <a href="{% url 'board_edit' board.created_by.username board.slug %}" class="btn">Configurações</a>
+    {% endif %}
+{% endfor %}
+
+<a href="{% url 'dashboard' %}">Voltar aos quadros</a>
+
+{% block scripts %}
+<script src="{% static 'js/column_edit.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

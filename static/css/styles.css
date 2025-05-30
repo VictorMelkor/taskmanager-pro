@@ -1,0 +1,254 @@
+/* ====================================================
+   RESET BÁSICO
+==================================================== */
+* {
+    box-sizing: border-box;
+}
+body, html {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    padding-top: 50px; /* espaço para navbar fixa */
+    padding-bottom: 40px; /* espaço para footer fixa */
+    
+    
+
+
+    
+
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    font-weight: 600;
+    color: #555;
+}
+
+.divider span {
+    background: #f0f4f8;
+    padding: 0 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    right: 10px;
+    height: 1px;
+    background: #ccc;
+    z-index: 0;
+}
+
+/* ====================================================
+   NAVBAR FIXA
+==================================================== */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(90deg, #1a3d7c, #104080);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 9999;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.nav-left {
+    flex-shrink: 1;
+    min-width: 0;
+}
+.nav-left h1 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.nav-right {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.nav-right li a,
+.nav-right li form button {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 16px;
+    white-space: nowrap;
+}
+.nav-right li a:hover,
+.nav-right li form button:hover {
+    text-decoration: underline;
+}
+
+/* ====================================================
+   FOOTER FIXA
+==================================================== */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(90deg, #1a3d7c, #104080);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+/* ====================================================
+   MENSAGENS
+==================================================== */
+.messages-container {
+    position: fixed;
+    top: 60px; /* abaixo da navbar */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 10500;
+}
+
+.message {
+    padding: 12px 20px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    color: white;
+}
+
+.message.error {
+    background-color: #e74c3c;
+}
+
+.message.success {
+    background-color: #2ecc71;
+}
+
+.message.info {
+    background-color: #3498db;
+}
+
+/* ====================================================
+   TÍTULOS E TEXTOS
+==================================================== */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e69de;
+    margin-bottom: 20px;
+}
+.main-text {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 40px;
+}
+
+/* ====================================================
+   CONTAINER CENTRAL
+==================================================== */
+.home-container {
+    max-width: 720px;
+    margin: 40px auto 60px; /* topo maior para mensagens fixas, bottom pra footer */
+    background: white;
+    padding: 50px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+
+}
+
+/* ====================================================
+   CAMPOS DE ENTRADA
+==================================================== */
+.input-field {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+.input-field:focus {
+    border-color: #1e69de;
+    outline: none;
+}
+
+/* ====================================================
+   BOTÕES
+==================================================== */
+.btn {
+    display: inline-block;
+    padding: 16px 36px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    min-width: 140px;
+    text-align: center;
+    border: none;
+}
+.btn-login {
+    background-color: #2980b9;
+}
+.btn-login:hover {
+    background-color: #1c5980;
+}
+.btn-signup {
+    background-color: #27ae60;
+}
+.btn-signup:hover {
+    background-color: #1e8743;
+}
+
+/* ====================================================
+   BOTÕES DE LOGIN SOCIAL
+==================================================== */
+.btn-google {
+    background-color: #db4437;
+}
+.btn-google:hover {
+    background-color: #b33629;
+}
+.btn-facebook {
+    background-color: #3b5998;
+}
+.btn-facebook:hover {
+    background-color: #2d4373;
+}
