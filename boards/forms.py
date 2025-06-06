@@ -14,7 +14,7 @@ class BoardMemberForm(forms.ModelForm):
 class BoardForm(forms.ModelForm):
     class Meta:
         model = Board
-        fields = ['name', 'description']
+        fields = ['name', 'description', 'color_theme']
 
 class BoardInviteForm(forms.Form):
     PERMISSION_CHOICES = [
@@ -22,4 +22,7 @@ class BoardInviteForm(forms.Form):
         ('editor', 'Editor'),
         ('viewer', 'Visualizador'),
     ]
-    permission = forms.ChoiceField(choices=PERMISSION_CHOICES, label='Permissão')
+    permission = forms.ChoiceField(
+        choices=PERMISSION_CHOICES, 
+        label='Permissão', 
+        initial='viewer')

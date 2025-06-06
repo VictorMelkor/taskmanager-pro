@@ -8,21 +8,31 @@ from django.utils import timezone
 
 
 class Board(models.Model):
-    """
-    Representa um quadro (board) onde usuários organizam colunas e tarefas.
-    """
-    name = models.CharField(max_length=50)
+    COLOR_CHOICES = [
+        ('theme1', 'Degradê Laranja'),
+        ('theme2', 'Degradê Azul'),
+        ('theme3', 'Degradê Verde'),
+        ('theme4', 'Degradê Rosa'),
+    ]
+
+    IMAGE_CHOICES = [
+        ('none', 'Nenhuma'),
+        ('img1', 'Imagem 1'),
+        ('img2', 'Imagem 2'),
+        ('img3', 'Imagem 3'),
+    ]
+
+    name = models.CharField(max_length=20)
     description = models.TextField(blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="boards")
     created_at = models.DateTimeField(auto_now_add=True)
     order = models.PositiveIntegerField(default=0)
     show_calendar = models.BooleanField(default=True)
     slug = models.SlugField(unique=True, blank=False)
+    color_theme = models.CharField(max_length=50, choices=COLOR_CHOICES, blank=True, null=True, default='theme2')
+    background_image = models.CharField(max_length=10, choices=IMAGE_CHOICES, default='none')
 
     def save(self, *args, **kwargs):
-        """
-        Garante slug único baseado no nome antes de salvar o Board.
-        """
         if not self.slug:
             base_slug = slugify(self.name)
             slug = base_slug
@@ -34,9 +44,6 @@ class Board(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        """
-        Representação legível do Board no admin e logs.
-        """
         return self.name
     
 
@@ -107,7 +114,6 @@ class BoardInvite(models.Model):
         ('viewer', 'Visualizador'),
         ('editor', 'Editor'),
         ('moderator', 'Moderador'),
-        ('owner', 'Proprietário'),
     ]
 
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
@@ -128,10 +134,11 @@ class Column(models.Model):
     Colunas dentro de um board para organizar tarefas.
     """
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=20)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
 
 class Task(models.Model):
     """

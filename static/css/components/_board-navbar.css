@@ -1,0 +1,59 @@
+/* =============================================
+   NAVBAR SECUNDÁRIA DO BOARD
+   - Fixa abaixo da navbar principal
+   - Ao lado do menu lateral
+============================================= */
+.board-topbar {
+  position: fixed;
+  top: 60px;
+  left: 220px;
+  right: 0;
+  height: 60px;
+  background-color: #e9f0fb;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid #ccc;
+  z-index: 9000;
+  gap: 20px;
+}
+
+.board-topbar .board-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.board-topbar .permission-level {
+  font-size: 0.9rem;
+  background-color: #d0e3ff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.board-topbar .board-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.board-topbar input[type="text"] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+}
+
+.board-topbar .share-btn {
+  background-color: #1a3d7c;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.board-topbar .share-btn:hover {
+  background-color: #104080;
+}

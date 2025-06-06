@@ -1,0 +1,79 @@
+/* ====================================================
+   BARRA DE NAVEGAÇÃO FIXA (NAVBAR)
+   - Estilização da navbar fixa superior
+   - Organização dos itens à esquerda e direita
+==================================================== */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(90deg, #1a3d7c, #104080);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 9999;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+    gap: 20px; /* espaço entre nav-left e nav-right */
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    min-width: 220px; /* largura mínima para o título */
+    white-space: nowrap;
+    flex-shrink: 0; /* impede encolhimento */
+}
+
+.nav-left .site-title-link {
+    color: white !important;
+    text-decoration: none !important;
+    font-size: 1.8rem;
+    font-weight: 900;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.nav-left .site-title-link:hover {
+    text-decoration: underline;
+}
+
+.nav-right {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    flex-grow: 1;               /* ocupa o espaço restante */
+    margin-right: 50px; 
+    justify-content: flex-end;  /* alinha os itens à direita */
+    overflow-x: auto;           /* permite scroll horizontal se precisar */
+    scrollbar-width: none;      /* Firefox */
+}
+
+.nav-right::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}
+
+.nav-right li a,
+.nav-right li form button {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.nav-right li a:hover,
+.nav-right li form button:hover {
+    text-decoration: underline;
+}

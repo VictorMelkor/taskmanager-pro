@@ -3,16 +3,19 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
-from .forms import UserCreationForm
+from .forms import UserCreationForm, CustomAuthenticationForm
 
 class CustomLoginView(LoginView):
     template_name = 'userauth/login.html'
     redirect_authenticated_user = True
-    success_url = reverse_lazy('home')
+    authentication_form = CustomAuthenticationForm 
 
-    def form_invalid(self, form):
-        messages.error(self.request, "Usuário ou senha inválidos.")
-        return super().form_invalid(form)
+    
+    def get_success_url(self):
+        return self.get_redirect_url() or reverse_lazy('dashboard')
+
+
+
 
 def signup(request):
     """
@@ -29,6 +32,10 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+
+            token = request.session.pop('pending_invite_token', None)
+            if token:
+                return redirect('board_invite_accept', token=token)
             return redirect('dashboard')
         else:
             return render(request, 'userauth/signup.html', {'form': form})

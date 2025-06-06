@@ -1,0 +1,39 @@
+/* ====================================================
+   MENU LATERAL (SIDEBAR)
+   - Navegação lateral flexível para múltiplos contextos
+==================================================== */
+.sidebar-dashboard {
+    width: 180px;
+    margin-top: 170px;  /* Ajuste fino da posição vertical */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-weight: bold;
+    padding-left: 10px;
+    background: transparent;
+}
+
+.sidebar-dashboard ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar-dashboard li {
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 4px;
+    text-align: left;
+}
+.sidebar-dashboard a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    display: block;
+}
+.sidebar-dashboard li.active a {
+    font-weight: bold;
+    color: #007c91;
+    border-left: 3px solid #007c91;
+    padding-left: 7px;
+    background-color: #e6f2f5;
+}

@@ -14,26 +14,62 @@ import json
 from . import models
 from .forms import BoardMemberForm, BoardForm, BoardInviteForm
 
+class BoardPermissionRequiredMixin:
+    required_permission = None
+    use_membership_filter = True
 
-class BoardListView(LoginRequiredMixin, ListView):
-    """
-    Exibe detalhes do board, incluindo colunas e tarefas associadas.
-    Acesso restrito a membros com permissão mínima de visualização.
-    """
+    def dispatch(self, request, *args, **kwargs):
+        board_filter = {'slug': kwargs['slug']}
 
-    model = models.Board
+        if self.use_membership_filter:
+            board_filter['memberships__member'] = request.user
+        else:
+            board_filter['created_by__username'] = kwargs['username']
+
+        board = get_object_or_404(models.Board, **board_filter)
+
+        if not models.BoardMember.user_has_access(board, request.user, self.required_permission):
+            return HttpResponseForbidden("Você não tem permissão suficiente para executar essa ação neste board.")
+
+        self.board = board
+        return super().dispatch(request, *args, **kwargs)
+
+class AjaxBoardPermissionMixin(BoardPermissionRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() != 'post':
+            return JsonResponse({'error': 'Método não permitido'}, status=405)
+        
+        # Tenta rodar o dispatch da BoardPermissionMixin, que pode retornar HttpResponseForbidden
+        response = super().dispatch(request, *args, **kwargs)
+
+        # Se o super().dispatch retornar HttpResponseForbidden, converte em JsonResponse
+        if isinstance(response, HttpResponseForbidden):
+            return JsonResponse({'error': 'Sem permissão'}, status=403)
+
+        return response
+
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from . import models
+
+class BoardListView(LoginRequiredMixin, TemplateView):
     template_name = 'boards/dashboard.html'
-    context_object_name = 'boards'
 
-    def get_queryset(self):
-        """
-        Retorna queryset com boards do usuário logado.
-        """
-        return models.Board.objects.filter(memberships__member=self.request.user).distinct()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        context['boards_own'] = models.Board.objects.filter(created_by=user)
+        context['boards_joined'] = models.Board.objects.filter(
+            memberships__member=user
+        ).exclude(created_by=user)
+
+        return context
 
 
 
-class BoardDetailView(LoginRequiredMixin, DetailView):
+
+class BoardDetailView(LoginRequiredMixin, DetailView, BoardPermissionRequiredMixin):
     """
     Exibe detalhes do board, incluindo colunas e tarefas associadas.
     Acesso restrito a membros com permissão mínima de visualização.
@@ -43,12 +79,15 @@ class BoardDetailView(LoginRequiredMixin, DetailView):
     template_name = 'boards/board_details.html'
     context_object_name = 'board'
 
+    required_permission = 'viewer'
+    use_membership_filter = True
+
     def get_queryset(self):
         """
         Retorna o board filtrado pelo slug e username, garantindo que o usuário seja membro.
         """
         return models.Board.objects.filter(
-            memberships__member__username=self.request.user,
+            memberships__member=self.request.user,
             slug=self.kwargs['slug']
         )
 
@@ -61,38 +100,8 @@ class BoardDetailView(LoginRequiredMixin, DetailView):
         context['tasks'] = models.Task.objects.filter(column__board=self.object)
         return context
     
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Garante que o usuário tenha permissão de acesso ao board.
-        Permissões válidas: owner, moderator, editor, viewer.
-        Caso contrário, retorna 403 (proibido).
-        """
-
-        board = get_object_or_404(
-            models.Board,
-            slug=kwargs['slug'],
-            memberships__member=request.user
-        )
-
-        member = models.BoardMember.objects.filter(
-            board=board,
-            member=request.user,
-            permission__in=['owner', 'moderator', 'editor', 'viewer']
-        ).first()
-
-        if not member:
-            return HttpResponseForbidden("Você não tem acesso a esse board.")
-        
-        return super().dispatch(request, *args, **kwargs)
-
-
 
 class BoardCreateView(LoginRequiredMixin, View):
-    """
-    Cria novo board. Apenas GET e POST para formulário.
-    Após salvar, adiciona o criador como membro com permissão 'owner'.
-    Também cria uma coluna padrão ao criar o board.
-    """
 
     def get(self, request):
         form = BoardForm()
@@ -119,44 +128,53 @@ class BoardCreateView(LoginRequiredMixin, View):
                 order=1
             )
 
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'id': board.id,
+                    'name': board.name,
+                    'url': reverse('board_detail', kwargs={
+                        'username': board.created_by.username,
+                        'slug': board.slug
+                    }),
+                    'color_theme': board.color_theme,
+                    'image_theme': board.background_image  # corrigido
+                })
+
             messages.success(request, 'Board criado com sucesso.')
             return redirect('dashboard')
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Nome inválido ou outro erro'}, status=400)
+
         return render(request, 'boards/new_board.html', {'form': form})
 
 
-class BoardEditView(LoginRequiredMixin, View):
+class BoardEditView(LoginRequiredMixin, View, BoardPermissionRequiredMixin):
     """
     Edita board, gerencia membros e gera convite.
     Restrições de permissão aplicadas conforme solicitado.
     """
 
-    @staticmethod
-    def user_can_edit_board(user, board):
-        try:
-            membership = models.BoardMember.objects.get(member=user, board=board)
-            return membership.permission in ['owner', 'moderator']
-        except models.BoardMember.DoesNotExist:
-            return False
+    required_permission = 'editor'
+    use_membership_filter = True
 
-    @staticmethod
-    def user_can_invite(user, board):
-        try:
-            membership = models.BoardMember.objects.get(member=user, board=board)
-            return membership.permission in ['owner', 'moderator']
-        except models.BoardMember.DoesNotExist:
-            return False
+    def dispatch(self, request, *args, **kwargs):
+        self.board = get_object_or_404(
+            models.Board,
+            slug=kwargs['slug'],
+            created_by__username=kwargs['username']
+        )
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, username, slug):
-        board = get_object_or_404(models.Board, slug=slug, created_by__username=username)
-        if not self.user_can_edit_board(request.user, board):
-            return redirect('dashboard')
-
-        board_form = BoardForm(instance=board)
-        members = models.BoardMember.objects.filter(board=board)
+        
+        board_form = BoardForm(instance=self.board)
+        members = models.BoardMember.objects.filter(board=self.board)
         invite_form = BoardInviteForm()
 
         context = {
-            'board': board,
+            'board': self.board,
             'board_form': board_form,
             'members': members,
             'invite_form': invite_form,
@@ -164,13 +182,9 @@ class BoardEditView(LoginRequiredMixin, View):
         return render(request, 'boards/board_edit.html', context)
 
     def post(self, request, username, slug):
-        board = get_object_or_404(models.Board, slug=slug, created_by__username=username)
-        if not self.user_can_edit_board(request.user, board):
-            return redirect('dashboard')
-
         if 'save_board' in request.POST:
-            board_form = BoardForm(request.POST, instance=board)
-            members = models.BoardMember.objects.filter(board=board)
+            board_form = BoardForm(request.POST, instance=self.board)
+            members = models.BoardMember.objects.filter(board=self.board)
             invite_form = BoardInviteForm()
             if board_form.is_valid():
                 board_form.save()
@@ -178,113 +192,12 @@ class BoardEditView(LoginRequiredMixin, View):
                 return redirect(reverse('board_edit', args=[username, slug]))
 
             context = {
-                'board': board,
+                'board': self.board,
                 'board_form': board_form,
                 'members': members,
                 'invite_form': invite_form,
             }
             return render(request, 'boards/board_edit.html', context)
-
-        elif 'create_invite' in request.POST:
-            if not self.user_can_invite(request.user, board):
-                messages.error(request, 'Sem permissão para gerar convites.')
-                return redirect(reverse('board_edit', args=[username, slug]))
-
-            invite_form = BoardInviteForm(request.POST)
-            members = models.BoardMember.objects.filter(board=board)
-            board_form = BoardForm(instance=board)
-            if invite_form.is_valid():
-                permission = invite_form.cleaned_data['permission']
-                if permission == 'owner':
-                    messages.error(request, 'Permissão owner não permitida para convites.')
-                    return redirect(reverse('board_edit', args=[username, slug]))
-
-                invite = models.BoardInvite.objects.create(
-                    board=board,
-                    invited_by=request.user,
-                    expires_at=timezone.now() + timedelta(days=7),
-                    permission=permission
-                )
-                invite_link = request.build_absolute_uri(
-                    reverse('board_invite_accept', args=[str(invite.token)])
-                )
-                messages.success(request, f'Link de convite gerado: {invite_link}')
-                return redirect(reverse('board_edit', args=[username, slug]))
-            else:
-                context = {
-                    'board': board,
-                    'board_form': board_form,
-                    'members': members,
-                    'invite_form': invite_form,
-                }
-                return render(request, 'boards/board_edit.html', context)
-
-        elif 'remove_member' in request.POST:
-            member_id = request.POST.get('remove_member')
-            try:
-                member = models.BoardMember.objects.get(id=member_id, board=board)
-
-                if member.permission == 'owner':
-                    messages.error(request, 'Não é permitido remover o proprietário (owner).')
-
-                elif member.member == request.user:
-                    if 'confirm_leave' not in request.POST:
-                        messages.error(request, 'Confirme que deseja sair do board.')
-                    else:
-                        member.delete()
-                        messages.success(request, 'Você saiu do board.')
-                        return redirect('dashboard')
-
-                else:
-                    member.delete()
-                    messages.success(request, 'Membro removido.')
-
-            except models.BoardMember.DoesNotExist:
-                messages.error(request, 'Membro não encontrado.')
-
-            return redirect(reverse('board_edit', args=[username, slug]))
-
-        else:
-            return redirect(reverse('board_edit', args=[username, slug]))
-
-
-
-class UpdateBoardView(LoginRequiredMixin, UpdateView):
-    """
-    Atualiza o título e descrição do board.
-    Acesso restrito a membros com permissão de proprietário ou moderador.
-    """
-    model = models.Board
-    fields = ['name', 'description']
-    template_name = 'boards/board_update.html'
-
-    def get_object(self, queryset=None):
-        queryset = self.model.objects.filter(
-            slug=self.kwargs['slug'], 
-            memberships__member=self.request.user
-        )
-        
-        board = super().get_object(queryset)
-        has_permission = models.BoardMember.objects.filter(
-            board=board,
-            member=self.request.user,
-            permission__in=['owner', 'moderator']
-        ).exists()
-        if not has_permission:
-            raise Http404("Você não tem permissão para editar esse board.")
-        return board
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['board'] = self.get_object()
-        return context
-
-    def get_success_url(self):
-        return reverse('board_detail', kwargs={
-            'username': self.kwargs['username'],
-            'slug': self.kwargs['slug']
-        })
-
 
 
 class DeleteBoardView(LoginRequiredMixin, DeleteView):
@@ -295,36 +208,18 @@ class DeleteBoardView(LoginRequiredMixin, DeleteView):
     template_name = 'boards/board_delete.html'
     success_url = reverse_lazy('dashboard')
 
+    required_permission = 'owner'
+    use_membership_filter = True
+        
+
     def get_object(self, queryset=None):
-        queryset = self.model.objects.filter(
-            slug=self.kwargs['slug'],
-            memberships__member=self.request.user
-        )
-        board = queryset.first()
-        if not board:
-            raise Http404("Board não encontrado.")
-
-        has_permission = models.BoardMember.objects.filter(
-            board=board,
-            member=self.request.user,
-            permission='owner'
-        ).exists()
-        if not has_permission:
-            raise Http404("Você não tem permissão para excluir esse board.")
-
-        return board
+        return self.board
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        board = self.get_object()
-        try:
-            permission = board.memberships.get(member=self.request.user).permission
-        except models.BoardMember.DoesNotExist:
-            permission = None
-        context['user_permission'] = permission
-        context['board'] = board
+        context['board'] = self.board
+        context['user_permission'] = 'owner'
         return context
-
 
 
 class AddBoardMemberView(LoginRequiredMixin, CreateView):
@@ -336,40 +231,11 @@ class AddBoardMemberView(LoginRequiredMixin, CreateView):
     form_class = BoardMemberForm
     template_name = 'boards/add_members.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.board = get_object_or_404(
-            models.Board,
-            slug=self.kwargs['slug'],
-            memberships__member=request.user  # Garante que o usuário é membro
-        )
-
-        has_permission = models.BoardMember.objects.filter(
-            board=self.board,
-            member=request.user,
-            permission__in=['owner', 'moderator']
-        ).exists()
-
-        if not has_permission:
-            raise Http404("Você não tem permissão para adicionar membros a esse board.")
-
-        return super().dispatch(request, *args, **kwargs)
+    required_permission = 'moderator'
+    use_membership_filter = True  
 
     def form_valid(self, form):
         form.instance.board = self.board
-
-        # Só permite permissões que o usuário atual pode conceder
-        user_permission = models.BoardMember.objects.get(
-            board=self.board,
-            member=self.request.user
-        ).permission
-
-        allowed_permissions = {
-            'owner': ['moderator', 'editor', 'viewer'],
-            'moderator': ['editor', 'viewer']
-        }
-
-        if form.instance.permission not in allowed_permissions.get(user_permission, []):
-            form.instance.permission = 'viewer'  # padrão seguro
 
         return super().form_valid(form)
 
@@ -377,9 +243,8 @@ class AddBoardMemberView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['board'] = self.board
 
-        board_member = models.BoardMember.objects.get(
-            board=self.board,
-            member=self.request.user
+        board_member = self.board.memberships.get(
+            member = self.request.user
         )
         user_permission = board_member.permission
         context['user_permission'] = user_permission
@@ -389,7 +254,6 @@ class AddBoardMemberView(LoginRequiredMixin, CreateView):
             'moderator': ['editor', 'viewer']
         }.get(user_permission, [])
 
-        # Filtra as opções do campo diretamente
         form = context['form']
         form.fields['permission'].choices = [
             (value, label)
@@ -407,59 +271,58 @@ class AddBoardMemberView(LoginRequiredMixin, CreateView):
         })
 
 
-
 class CreateBoardInviteView(LoginRequiredMixin, View):
     """
     Cria convite para usuário entrar no board via token.
     Restrito a proprietários e moderadores.
     """
 
+    required_permission = 'moderator'
+    use_membership_filter = True
+
+    def dispatch(self, request, username, slug, *args, **kwargs):
+        try:
+            self.board = models.Board.objects.get(slug=slug, created_by__username=username)
+        except models.Board.DoesNotExist:
+            return render(request, '404.html', status=404)  # Ou JsonResponse com status 404
+        return super().dispatch(request, username, slug, *args, **kwargs)
+
+
     def get(self, request, username, slug):
         form = BoardInviteForm()
         return render(request, 'boards/invite_form.html', {'form': form, 'username': username, 'slug': slug})
 
     def post(self, request, username, slug):
-        board = get_object_or_404(
-            models.Board,
-            slug=slug,
-            memberships__member=request.user
-        )
-
-        has_permission = models.BoardMember.objects.filter(
-            board=board,
-            member=request.user,
-            permission__in=['owner', 'moderator']
-        ).exists()
-
-        if not has_permission:
-            messages.error(request, "Sem permissão para convidar membros.")
-            return redirect('board_detail', username=username, slug=slug)
-
         form = BoardInviteForm(request.POST)
         if form.is_valid():
-            permission = form.cleaned_data['permission']
-
             invite = models.BoardInvite.objects.create(
-                board=board,
+                board=self.board,
                 invited_by=request.user,
-                permission=permission,
+                permission=form.cleaned_data['permission'],
                 expires_at=timezone.now() + timedelta(days=7)
             )
-
-            invite_link = request.build_absolute_uri(
+            link = request.build_absolute_uri(
                 reverse('board_invite_accept', args=[str(invite.token)])
             )
-            messages.success(request, f'Link de convite gerado: {invite_link}')
-            return redirect('board_edit', username=username, slug=slug)
-
-        return render(request, 'boards/invite_form.html', {'form': form, 'username': username, 'slug': slug})
+            return JsonResponse({
+                "message": "Link de convite gerado com sucesso!",
+                "link": link
+            })
+        return JsonResponse({
+            "message": "Erro ao gerar convite. Verifique os dados do formulário."
+        }, status=400)
 
 
 class BoardInviteAcceptView(View):
     def get(self, request, token):
         invite = get_object_or_404(models.BoardInvite, token=token)
 
+        if invite.accepted:
+            messages.error(request, "Este convite já foi utilizado.")
+            return redirect('dashboard')
+
         if not request.user.is_authenticated:
+            request.session['pending_invite_token'] = str(token)
             login_url = f"{reverse('login')}?next={request.path}"
             return redirect(login_url)
 
@@ -501,20 +364,15 @@ class AddColumnView(LoginRequiredMixin, CreateView):
     fields = ['name']
     template_name = 'boards/add_column.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.board = get_object_or_404(
-            models.Board,
-            created_by__username=self.kwargs['username'],
-            slug=self.kwargs['slug']
-        )
-        has_permission = models.BoardMember.objects.filter(
-            board=self.board,
-            member=request.user,
-            permission__in=['owner', 'moderator', 'editor']
-        ).exists()
-        if not has_permission:
-            return HttpResponseForbidden("Você não tem permissão para editar colunas nesse board.")
-        return super().dispatch(request, *args, **kwargs)
+    required_permission = 'editor'
+    use_membership_filter = True
+
+    def dispatch(self, request, username, slug, *args, **kwargs):
+        try:
+            self.board = models.Board.objects.get(slug=slug, created_by__username=username)
+        except models.Board.DoesNotExist:
+            raise Http404("Board não encontrado")
+        return super().dispatch(request, username, slug, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.board = self.board
@@ -530,29 +388,42 @@ class AddColumnView(LoginRequiredMixin, CreateView):
             'username': self.kwargs['username'],
             'slug': self.kwargs['slug']
         })
+    
+    def post(self, request, username, slug, *args, **kwargs):
+        # Se veio JSON, parseia e cria coluna direto
+        if request.content_type == 'application/json':
+            try:
+                data = json.loads(request.body.decode('utf-8'))
+                name = data.get('name', '').strip()
+                if not name:
+                    return JsonResponse({'error': 'Nome inválido'}, status=400)
+
+                self.board = models.Board.objects.get(slug=slug, created_by__username=username)
+
+                # Verifica permissão do usuário para editar
+                if not models.BoardMember.user_has_access(self.board, request.user, 'editor'):
+                    return JsonResponse({'error': 'Permissão negada'}, status=403)
+
+                column = models.Column.objects.create(board=self.board, name=name)
+                return JsonResponse({'success': True, 'id': column.id, 'name': column.name})
+
+            except models.Board.DoesNotExist:
+                return JsonResponse({'error': 'Board não encontrado'}, status=404)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+        else:
+            # Caso normal de formulário, chama CreateView.post padrão
+            return super().post(request, username, slug, *args, **kwargs)
 
 
-
-class EditColumnAjaxView(LoginRequiredMixin, View):
-    def dispatch(self, request, *args, **kwargs):
-        if request.method.lower() != 'post':
-            return JsonResponse({'error': 'Método não permitido'}, status=405)
-        return super().dispatch(request, *args, **kwargs)
+class EditColumnAjaxView(LoginRequiredMixin, AjaxBoardPermissionMixin, View):
+    required_permission = 'editor'  # Permissão necessária
 
     def post(self, request, username, slug, pk):
         try:
-            column = models.Column.objects.get(pk=pk, board__slug=slug, board__created_by__username=username)
+            column = models.Column.objects.get(pk=pk, board=self.board)
         except models.Column.DoesNotExist:
             return JsonResponse({'error': 'Coluna não encontrada'}, status=404)
-
-        board = column.board
-        try:
-            membership = models.BoardMember.objects.get(board=board, member=request.user)
-        except models.BoardMember.DoesNotExist:
-            return JsonResponse({'error': 'Sem permissão'}, status=403)
-
-        if membership.permission not in ['owner', 'moderator']:
-            return JsonResponse({'error': 'Sem permissão'}, status=403)
 
         try:
             data = json.loads(request.body.decode('utf-8'))
@@ -570,29 +441,14 @@ class EditColumnAjaxView(LoginRequiredMixin, View):
 
 
 
-class DeleteColumnAjaxView(LoginRequiredMixin, View):
+class DeleteColumnAjaxView(LoginRequiredMixin, AjaxBoardPermissionMixin, View):
+    required_permission = 'editor'  # ajusta para a permissão correta
+
     def post(self, request, username, slug, pk):
         try:
-            column = models.Column.objects.get(pk=pk, board__slug=slug, board__created_by__username=username)
+            column = models.Column.objects.get(pk=pk, board=self.board)
         except models.Column.DoesNotExist:
             return JsonResponse({'error': 'Coluna não encontrada'}, status=404)
-
-        board = column.board
-        
-        has_permission = models.BoardMember.objects.filter(
-            board=board,
-            member=request.user,
-            permission__in=['owner', 'moderator']
-    ).exists()
-
-        if not has_permission:
-            return JsonResponse({'error': 'Sem permissão'}, status=403)
-
-        
-        def dispatch(self, request, *args, **kwargs):
-            if request.method.lower() != 'post':
-                return JsonResponse({'error': 'Método não permitido'}, status=405)
-            return super().dispatch(request, *args, **kwargs)
 
         column.delete()
         return JsonResponse({'success': True})

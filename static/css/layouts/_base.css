@@ -1,0 +1,16 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(-45deg, #007a99, #3a7ca5, #104080, #1a3d7c);
+    background-size: 400% 400%;
+    animation: gradientAnimation 6s ease infinite;
+    overflow: hidden; /* evita rolagem */
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 80% 50%; }
+    100% { background-position: 0% 50%; }
+}

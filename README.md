@@ -7,8 +7,8 @@
 
 ## 🚀 Sobre o Projeto
 
-TaskManager Pro é um gerenciador de tarefas que permite criação, edição e exclusão de quadros ("boards"), colunas e tarefas, com níveis de permissão granular para usuários: **owner**, **moderator**, **editor** e **viewer**.  
-Possui autenticação integrada (login padrão e social via django-allauth) e controle de acesso rigoroso em todas as operações.
+askManager Pro é um gerenciador de tarefas com criação, edição e exclusão de boards, colunas e tarefas. Implementa níveis granulares de permissão: **owner**, **moderator**, **editor** e **viewer**.  
+Autenticação com django-allauth (login padrão e social Google/Facebook). Segurança com validação de permissões no backend e uso de tokens CSRF.
 
 ---
 
@@ -19,7 +19,7 @@ Possui autenticação integrada (login padrão e social via django-allauth) e co
 ## 🛠 Tecnologias
 
 - **Backend:** Python 3, Django 4.x  
-- **Frontend:** HTML5, CSS3 (Tailwind CSS para estilização básica), JavaScript (Vanilla)  
+- **Frontend:** HTML5, CSS3 (Tailwind CSS para estilização básica sem frameworks pesados), JavaScript (Vanilla)  
 - **Banco de dados:** SQLite (para desenvolvimento)  
 - **Autenticação:** django-allauth (login, registro, social login Google e Facebook)  
 - **Controle de versão:** Git  
@@ -186,12 +186,17 @@ Taskmanager-pro/
 
 ---
 
-## Futuro
+## Futuro (Roadmap)
 
-- AJAX para tarefas e colunas
-- Notificações WebSocket
-- API com DRF
-- Comentários e anexos em tarefas
+- Completar funcionalidades AJAX para edição dinâmica de tarefas e colunas
+- Implementar notificações via WebSocket
+- Desenvolver API REST com Django REST Framework para integração futura
+ -Adicionar suporte a comentários e anexos nas tarefas
+- Melhorar frontend com CSS organizado e responsivo
+- Automatizar criação de colunas padrão ao criar novo board
+- Modal para visualização e edição rápida de tarefas (sem recarregar página)
+- Controle refinado de permissões e fluxos de convite
+- Refinar testes automatizados e documentação
 
 
 ## Contato

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <h1>Editar Board "{{ board.name }}"</h1>
@@ -34,13 +35,16 @@
 <hr/>
 
 <h2>Gerar link de convite</h2>
-<form method="post">
+<form id="invite-form" method="post" action="{% url 'create_board_invite' username=board.created_by.username slug=board.slug %}">
     {% csrf_token %}
     {{ invite_form.as_p }}
-    <button type="submit" name="create_invite" class="btn">
+    <button type="submit" class="btn">
         Gerar link de convite (válido por 7 dias)
     </button>
 </form>
+
+<div id="invite-response" class="mt-4 text-green-700"></div>
+
 
 {% if invite_link %}
     <p>Link de convite: <a href="{{ invite_link }}">{{ invite_link }}</a></p>
@@ -52,5 +56,7 @@
     {% endfor %}
 {% endif %}
 
+<a href="#" class="text-blue-500 hover:underline mt-6 block">← Voltar ao Quadro</a>
 <a href="{% url 'dashboard' %}" class="text-blue-500 hover:underline mt-6 block">← Voltar ao painel</a>
+<script src="{% static 'js/board_invite.js' %}"></script>
 {% endblock %}

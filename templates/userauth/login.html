@@ -2,39 +2,38 @@
 {% load static widget_tweaks %}
 {% block content %}
 
-{% if messages %}
-    <div class="messages-container">
-        {% for message in messages %}
-            <div class="message {{ message.tags }}">
-                {{ message }}
-            </div>
+<div class="userauth-container">
+
+    {% if form.non_field_errors %}
+    <div class="message error">
+        {% for error in form.non_field_errors %}
+        {{ error }}
         {% endfor %}
     </div>
-{% endif %}
+    {% endif %}
 
-<div class="home-container">
     <h1>Login</h1>
 
-    <form method="post" style="width: 100%;">
+    <form method="post">
         {% csrf_token %}
-        <div style="margin-bottom: 16px; text-align: left;">
-            <label for="id_username">Usuário ou Email:</label><br>
+        <div class="form-group">
+            <label for="id_username">Usuário ou Email:</label>
             {{ form.username|add_class:"input-field" }}
         </div>
-        <div style="margin-bottom: 24px; text-align: left;">
-            <label for="id_password">Senha:</label><br>
+        <div class="form-group">
+            <label for="id_password">Senha:</label>
             {{ form.password|add_class:"input-field" }}
         </div>
-        <button type="submit" class="btn btn-login" style="width: 100%;">Entrar</button>
+        <button type="submit" class="btn btn-login">Entrar</button>
     </form>
 
     <div class="divider">
         <span>ou entre com</span>
     </div>
 
-    <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 12px; width: 100%;">
-        <a href="#" class="btn btn-google" style="width: 100%;">Entrar com Google</a>
-        <a href="#" class="btn btn-facebook" style="width: 100%;">Entrar com Facebook</a>
+    <div class="social-login">
+        <a href="#" class="userauth-btn btn-google">Entrar com Google</a>
+        <a href="#" class="userauth-btn btn-facebook">Entrar com Facebook</a>
     </div>
 
     <p>Não tem conta? <a href="{% url 'signup' %}">Criar conta</a></p>

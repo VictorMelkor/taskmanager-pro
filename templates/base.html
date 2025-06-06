@@ -5,22 +5,16 @@
 <head>
     <meta charset="UTF-8" />
     <title>{% block title %}TaskManager Pro{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
-
+<body class="{% block body_class %}{% endblock %}">
     {% include 'includes/navbar.html' %}
-
     {% include 'includes/messages.html' %}
-
     <main>
         {% block content %}{% endblock %}
     </main>
-
     {% include 'includes/footer.html' %}
-
-    {% block scripts %}{% endblock %}
-
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

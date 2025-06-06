@@ -1,0 +1,68 @@
+/* ======== BOTÕES ======== */
+/* Botões padrão para outros usos */
+.btn {
+    display: inline-block;
+    padding: 16px 36px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    min-width: 140px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+/* ======== BOTÕES USERAUTH (login/signup) ======== */
+/* Largura total, padding horizontal reduzido, remove min-width para evitar overflow */
+.userauth-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 0;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+/*Cores*/ 
+
+.btn-login {
+    background-color: #2980b9;
+}
+.btn-login:hover {
+    background-color: #1c5980;
+}
+.btn-signup {
+    background-color: #27ae60;
+}
+.btn-signup:hover {
+    background-color: #1e8743;
+}
+
+/* ======== BOTÕES SOCIAIS ======== */
+.btn-google {
+    background-color: #db4437;
+}
+.btn-google:hover {
+    background-color: #b33629;
+}
+.btn-facebook {
+    background-color: #3b5998;
+}
+.btn-facebook:hover {
+    background-color: #2d4373;
+}
+
+
+

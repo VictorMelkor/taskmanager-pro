@@ -1,28 +1,103 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/pages/_dashboard.css' %}">
+{% endblock %}
+
+{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<h1>Bem-vindo, {{ request.user.get_full_name|default:request.user.username }}</h1>
+<div class="dashboard-layout">
+  <aside class="sidebar-dashboard" role="navigation" aria-label="Menu lateral">
+    <ul>
+      <li class="active"><a href="#" aria-current="page">Quadros</a></li>
+      <li><a href="#">Configurações</a></li>
+      <li><a href="#">Equipes</a></li>
+    </ul>
+  </aside>
 
-<a href="{% url 'board_create' %}">Criar novo quadro</a>
+  <div class="separator" aria-hidden="true"></div>
 
-<h2>Seus Quadros</h2>
-<ul>
-  {% for board in boards %}
-    <li>
-      <strong>{{ board.name }}</strong><br>
-      {{ board.description }}<br>
-      Criado em: {{ board.created_at|date:"d/m/Y" }}
-      {% if board.slug %}
-        <a href="{% url 'board_detail' username=board.created_by.username slug=board.slug %}">Ver quadro</a>
-      {% else %}
-        <!-- Slug não definido -->
-        <span>Quadro sem link</span>
-      {% endif %}
-    </li>
-  {% empty %}
-    <li>Você ainda não tem quadros.</li>
-  {% endfor %}
-</ul>
+  <main class="main-content" role="main">
+    <h1 class="welcome">
+      Bem-vindo, {{ request.user.get_full_name|default:request.user.username }}
+    </h1>
 
-<!-- Reservado para configurações futuras -->
+    <section class="board-section" aria-label="Seus quadros">
+      <h2>SEUS QUADROS</h2>
+      <div class="board-container">
+        {% if boards_own and boards_own.exists %}
+          {% for board in boards_own %}
+            <a href="{% url 'board_detail' username=board.created_by.username slug=board.slug %}"
+              class="board-card {% if board.color_theme %}board-theme-{{ board.color_theme }}{% endif %} {% if board.image_theme %}board-image-{{ board.image_theme }}{% endif %}"
+              title="{{ board.name }}">
+              <div class="board-name">{{ board.name }}</div>
+            </a>
+          {% endfor %}
+        {% endif %}
+
+        <button id="open-create-board-modal" class="board-card create-board" type="button"
+                aria-haspopup="dialog" aria-controls="create-board-modal" aria-expanded="false">
+          <span class="plus-icon" aria-hidden="true">+</span>
+          <span>Criar novo quadro</span>
+        </button>
+      </div>
+    </section>
+
+    {% if boards_joined and boards_joined.exists %}
+    <section class="board-section" aria-label="Quadros em que você faz parte">
+      <h2>QUADROS EM QUE VOCÊ FAZ PARTE</h2>
+      <div class="board-container">
+        {% for board in boards_joined %}
+          <a href="{% url 'board_detail' username=board.created_by.username slug=board.slug %}"
+            class="board-card {% if board.color_theme %}board-theme-{{ board.color_theme }}{% endif %} {% if board.image_theme %}board-image-{{ board.image_theme }}{% endif %}"
+            title="{{ board.name }}">
+            <div class="board-name">{{ board.name }}</div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </main>
+</div>
+
+<div id="create-board-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1" hidden>
+  <div class="modal-content">
+    <button id="close-create-board-modal" class="modal-close-btn" aria-label="Fechar modal">&times;</button>
+    <h2 id="modal-title">Criar Novo Quadro</h2>
+    <form id="create-board-form" method="post" action="{% url 'board_create' %}">
+      {% csrf_token %}
+      <div style="margin-bottom: 16px; text-align: left;">
+        <label for="id_name">Nome do Quadro:</label><br>
+        <input type="text" name="name" id="id_name" maxlength="20" required autocomplete="off" class="input-field">
+      </div>
+      <div style="margin-bottom: 16px; text-align: left;">
+        <label for="id_description">Descrição:</label><br>
+        <textarea name="description" id="id_description" maxlength="500" rows="3" autocomplete="off" class="input-field"></textarea>
+      </div>
+      <div style="margin-bottom: 16px; text-align: left;">
+        <label for="id_color_theme">Cor do Quadro:</label><br><br>
+        <div class="color-selection">
+          <input type="radio" id="color-blue" name="color_theme" value="theme2" checked hidden>
+          <label for="color-blue" class="color-option color-blue"></label>
+
+          <input type="radio" id="color-green" name="color_theme" value="theme3" hidden>
+          <label for="color-green" class="color-option color-green"></label>
+
+          <input type="radio" id="color-red" name="color_theme" value="theme1" hidden>
+          <label for="color-red" class="color-option color-red"></label>
+
+          <input type="radio" id="color-yellow" name="color_theme" value="theme4" hidden>
+          <label for="color-yellow" class="color-option color-yellow"></label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-login" style="width: 100%;">Criar</button>
+    </form>
+    <div id="create-board-error" class="error" role="alert" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<script src="{% static 'js/board_create.js' %}"></script>
 {% endblock %}

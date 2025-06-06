@@ -1,0 +1,203 @@
+/* === RESET E BASE === */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === LAYOUT PRINCIPAL BOARD === */
+body.board-page {
+  min-height: 100vh;
+  height: 100%;
+  overflow: auto;
+  background: none !important;
+  background-color: #f5f7fa !important;
+  animation: none !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === CONTEÚDO PRINCIPAL === */
+.main-content {
+  flex-grow: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+.main-content h1 {
+  text-align: center;
+  margin-top: 0;
+}
+.board-section {
+  margin-top: 30px;
+}
+.board-section h2 {
+  text-align: left;
+  font-size: 1em;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+
+/* === COLUNAS === */
+
+.column-name {
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 1;
+  position: relative;
+}
+
+.board-columns-wrapper {
+  position: fixed;
+  top: 120px;      /* 60 (navbar principal) + 60 (navbar secundária) */
+  bottom: 40px;    /* altura do footer */
+  left: 220px;     /* largura do menu lateral */
+  right: 0;
+
+  overflow-y: auto;
+  overflow-x: auto;
+
+  padding: 24px;
+  background-color: #f9f9f9;
+  z-index: 1; /* menor que navbars e footer */
+}
+
+.board-columns {
+  display: flex;
+  gap: 16px;
+  min-width: max-content;
+}
+
+.column-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 280px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header da coluna */
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.edit-column-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botão de adicionar tarefa */
+.add-task-btn {
+  margin-top: 12px;
+  background-color: #dbe9ff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* === CRIAR NOVA COLUNA === */
+.create-column {
+  height: 50%;
+  margin: 0 10px;
+}
+
+.create-column button {
+  background-color: transparent;
+  color: #007c91;
+  border: 2px dashed #00acc1;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 1rem;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.create-column button:hover {
+  background-color: #e0f7fa;
+  color: #004f5b;
+  border-color: #007c91;
+}
+
+.create-column button .plus-icon {
+  font-size: 2em;
+  line-height: 1;
+}
+
+.create-column button span {
+  font-size: 0.9em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* === FORM DE EDIÇÃO DO NOME === */
+.edit-column-form {
+  display: none;
+}
+
+.edit-column-form input.edit-column-name {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  font-size: 1rem;
+}
+
+/* === BOTÕES === */
+.btn {
+  padding: 12px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.column-options-btn {
+  z-index: 0;
+  position: relative;
+}
+
+.btn.btn-login:hover {
+  background-color: #00408f;
+}
+
+.btn.btn-delete {
+  background-color: #db4437;
+}
+
+.btn.btn-delete:hover {
+  background-color: #b33629;
+}
+
+.btn.btn-cancel {
+  background-color: #27ae60;
+}
+
+.btn.btn-cancel:hover {
+  background-color: #1e8743;
+}

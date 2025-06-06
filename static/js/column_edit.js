@@ -1,80 +1,120 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const csrftoken = getCookie('csrftoken');
+console.log('column_edit.js carregado');
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+document.addEventListener('DOMContentLoaded', () => {
+    initializeAllColumns();
+});
+
+// Inicializa a edição do nome para um span específico
+function initializeColumnNameEdit(span) {
+    span.addEventListener('click', () => {
+        console.log('clicou no nome da coluna');
+
+        if (span.querySelector('input')) return; // já em edição
+
+        const oldName = span.textContent.trim();
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = oldName;
+        input.classList.add('column-name-input', 'input-field');
+
+        span.textContent = '';
+        span.appendChild(input);
+        input.focus();
+
+        const cancelEdit = () => {
+            span.textContent = oldName;
+        };
+
+        const saveEdit = () => {
+            const newName = input.value.trim();
+            if (!newName || newName === oldName) {
+                cancelEdit();
+                return;
             }
-        }
-        return cookieValue;
-    }
 
-    function ajaxEditColumn(columnId, newName, span, input) {
-        fetch(`/${span.dataset.username}/${span.dataset.slug}/columns/${columnId}/edit-ajax/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken,
-            },
-            body: JSON.stringify({ name: newName })
-        })
-        .then(res => res.json().then(data => ({ status: res.status, body: data })))
-        .then(({ status, body }) => {
-            if (status === 200 && body.success) {
-                span.textContent = body.name;
-            } else {
-                alert(body.error || 'Erro ao editar coluna');
-            }
-            span.style.display = 'inline';
-            input.remove();
-        })
-        .catch(() => {
-            alert('Erro na requisição');
-            span.style.display = 'inline';
-            input.remove();
-        });
-    }
-
-    document.querySelectorAll('.column-name').forEach(span => {
-        span.addEventListener('click', function () {
-            const columnId = this.dataset.columnId;
-            const username = this.dataset.username;
-            const slug = this.dataset.slug;
-            const currentName = this.textContent.trim();
-
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-
-            this.style.display = 'none';
-            this.parentNode.insertBefore(input, this);
-            input.focus();
-
-            input.addEventListener('blur', () => {
-                const newName = input.value.trim();
-                if (newName && newName !== currentName) {
-                    ajaxEditColumn(columnId, newName, span, input);
+            const columnId = span.closest('.column-card').dataset.columnId;
+            fetch(`/dashboard/${window.username}/${window.slug}/columns/${columnId}/edit-ajax/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ name: newName })
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                if (data.success) {
+                    span.textContent = data.name;
                 } else {
-                    span.style.display = 'inline';
-                    input.remove();
+                    alert(data.error || 'Erro ao editar coluna');
+                    cancelEdit();
                 }
+            })
+            .catch(() => {
+                alert('Erro na comunicação com o servidor');
+                cancelEdit();
             });
+        };
 
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    input.blur();
-                } else if (e.key === 'Escape') {
-                    span.style.display = 'inline';
-                    input.remove();
-                }
-            });
+        input.addEventListener('blur', saveEdit);
+
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                input.blur();
+            } else if (e.key === 'Escape') {
+                cancelEdit();
+            }
         });
     });
-});
+}
+
+// Inicializa todos os spans de colunas já no DOM
+function initializeAllColumns() {
+    document.querySelectorAll('.column-name').forEach(span => {
+        initializeColumnNameEdit(span);
+    });
+
+    initializeColumnOptionsButtons();
+}
+
+// Aqui deve ter a função que inicializa os botões de opções e adicionar tarefa, por exemplo:
+function initializeColumnOptionsButtons() {
+    // Exemplo simples, adapte conforme seu código real
+    document.querySelectorAll('.column-options-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            const dropdown = btn.nextElementSibling;
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+    });
+
+    // Também pode adicionar listeners para botões de excluir, mover, adicionar tarefa etc
+}
+
+// Exporta essa função para usar no JS que cria a nova coluna
+function initializeNewColumn(columnElement) {
+    const nameSpan = columnElement.querySelector('.column-name');
+    if (nameSpan) initializeColumnNameEdit(nameSpan);
+
+    initializeColumnOptionsButtons();
+
+    // Inicialize outros botões da coluna (ex: add-task-btn) se necessário
+}
+
+// Função para pegar CSRF cookie (padrão Django)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const c = cookie.trim();
+            if (c.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(c.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

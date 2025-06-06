@@ -1,0 +1,45 @@
+/* =============================================
+   MENU LATERAL (SIDEBAR)
+   - Fixo à esquerda
+   - Ocupa toda a altura da tela, abaixo da navbar
+============================================= */
+.page-body {
+  display: flex;
+  margin: 0;
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px; /* altura exata da navbar */
+  left: 0;
+  width: 220px;
+  height: calc(100vh - 60px - 40px); /* altura da viewport menos navbar e footer */
+  background-color: #2a4a88;
+  padding: 30px;
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 1; /* atrás da navbar (9999) e footer (defina 9998) */
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  margin-bottom: 15px;
+}
+
+.sidebar-menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-menu a:hover {
+  text-decoration: underline;
+}

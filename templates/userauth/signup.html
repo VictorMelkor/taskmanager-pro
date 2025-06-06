@@ -1,27 +1,57 @@
-{% extends 'base.html' %}
-
-{% block title %}Cadastro{% endblock %}
-
+{% extends "base.html" %}
+{% load static widget_tweaks %}
 {% block content %}
-<h2>Cadastro de Usuário</h2>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Registrar</button>
-</form>
+<div class="userauth-container signup">
+    <h1>Criar Conta</h1>
 
-{% if form.errors %}
-  <ul style="color: red;">
-    {% for field in form %}
-      {% for error in field.errors %}
-        <li>{{ error }}</li>
-      {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-      <li>{{ error }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
+    <div class="signup-content">
+        <div class="signup-form">
+            {% if form.non_field_errors %}
+                <div class="message error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_username">Usuário:</label>
+                    {{ form.username|add_class:"input-field" }}
+                    {{ form.username.errors }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email">Email:</label>
+                    {{ form.email|add_class:"input-field" }}
+                    {{ form.email.errors }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password1">Senha:</label>
+                    {{ form.password1|add_class:"input-field" }}
+                    {{ form.password1.errors }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password2">Confirme a senha:</label>
+                    {{ form.password2|add_class:"input-field" }}
+                    {{ form.password2.errors }}
+                </div>
+
+                <button type="submit" class="btn btn-signup">Criar Conta</button>
+            </form>
+        </div>
+
+        <div class="divider-vertical"></div>
+
+        <div class="signup-social">
+                <div class="divider">
+                    <span>ou cadastre-se com</span>
+                </div>
+            <a href="#" class="btn btn-google">Entrar com Google</a>
+            <a href="#" class="btn btn-facebook">Entrar com Facebook</a>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
