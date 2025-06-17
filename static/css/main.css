@@ -1,16 +1,15 @@
-@import url('base/_reset.css');
 @import url('layouts/_container.css');
 @import url('components/_button.css');
 @import url('components/_forms.css');
 @import url('components/_sidebar-dashboard.css');
 @import url('components/_sidebar-board.css');
 @import url('components/_board-navbar.css');
-@import url('pages/_home.css');
 @import url('layouts/_navbar.css');
 @import url('layouts/_footer.css');
 @import url('layouts/_base.css');
 @import url('pages/_dashboard.css');
 @import url('pages/_board.css');
+@import url('pages/_home.css');
 
 
 /* ====================================================

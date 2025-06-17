@@ -14,7 +14,7 @@
 
 ## Organização de Templates
 - Templates organizados por app:
-  - `userauth/`, `tasks/`, `pages/`, `includes/`
+  - `userauth/`, `boards/`, `pages/`, `includes/`
 - Base HTML com navegação dinâmica via `request.user`.
 
 ## Padrões e Boas Práticas

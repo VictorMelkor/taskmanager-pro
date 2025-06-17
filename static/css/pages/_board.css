@@ -44,9 +44,7 @@ body.board-page {
   text-transform: uppercase;
 }
 
-
 /* === COLUNAS === */
-
 .column-name {
   cursor: pointer;
   pointer-events: auto;
@@ -56,27 +54,26 @@ body.board-page {
 
 .board-columns-wrapper {
   position: fixed;
-  top: 120px;      /* 60 (navbar principal) + 60 (navbar secundária) */
-  bottom: 40px;    /* altura do footer */
-  left: 220px;     /* largura do menu lateral */
+  top: 120px;
+  bottom: 40px;
+  left: 220px;
   right: 0;
-
   overflow-y: auto;
   overflow-x: auto;
-
   padding: 24px;
   background-color: #f9f9f9;
-  z-index: 1; /* menor que navbars e footer */
+  z-index: 1;
 }
 
 .board-columns {
   display: flex;
+  align-items: flex-start;
   gap: 16px;
   min-width: max-content;
 }
 
 .column-card {
-  background: white;
+  background: #e0e0e0;
   border-radius: 12px;
   padding: 16px;
   min-width: 280px;
@@ -85,7 +82,8 @@ body.board-page {
   flex-direction: column;
 }
 
-/* Header da coluna */
+
+/* === HEADER DA COLUNA === */
 .column-header {
   display: flex;
   justify-content: space-between;
@@ -101,7 +99,8 @@ body.board-page {
   text-overflow: ellipsis;
 }
 
-/* Botão de adicionar tarefa */
+
+/* === BOTÃO DE ADICIONAR TAREFA === */
 .add-task-btn {
   margin-top: 12px;
   background-color: #dbe9ff;
@@ -110,7 +109,25 @@ body.board-page {
   padding: 8px;
   cursor: pointer;
   font-weight: 600;
+  width: 100%;
+  display: block;
+  text-align: center;
 }
+
+.task-card {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.task-input {
+  width: 90%;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 
 /* === CRIAR NOVA COLUNA === */
 .create-column {
@@ -119,7 +136,7 @@ body.board-page {
 }
 
 .create-column button {
-  background-color: transparent;
+  background-color: transparent !important;
   color: #007c91;
   border: 2px dashed #00acc1;
   border-radius: 8px;
@@ -152,7 +169,47 @@ body.board-page {
   font-size: 0.9em;
   font-weight: 600;
   text-transform: uppercase;
+
+  
 }
+
+
+/* === EXCLUIR COLUNA === */
+.delete-column-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  cursor: pointer;
+}
+
+.delete-column-btn:hover {
+  color: #e00;
+}
+
+.delete-column-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  cursor: pointer;
+}
+
+.delete-column-btn:hover {
+  color: #e00;
+}
+
+.modal-content p {
+  text-align: center;
+  font-weight: bold;
+}
+
 
 /* === FORM DE EDIÇÃO DO NOME === */
 .edit-column-form {
@@ -166,7 +223,91 @@ body.board-page {
   font-size: 1rem;
 }
 
-/* === BOTÕES === */
+/* === TASKS === */
+
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* não precisa de largura fixa, ocupa 100% da coluna */
+  width: 100%;
+  max-height: 100%; /* para garantir dentro da coluna */
+  overflow-y: auto;
+}
+
+.task-card {
+  background: #fefefe; /* leve tom off-white para contraste */
+  border: 1px solid #ddd; /* borda clara para delimitar */
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  cursor: default;
+  user-select: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.task-name {
+  font-weight: bold;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.task-input {
+  width: 100%;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  user-select: text;
+  cursor: text;
+}
+
+.task-card[data-task-id] {
+  cursor: pointer;
+  /* Se quiser adicionar ícones ou botões depois, alinhar flex */
+  justify-content: flex-start;
+}
+
+/* Para input focado dentro da task-card */
+.task-input:focus {
+  border-bottom: 1px solid #007bff;
+}
+
+/* Scroll dentro da lista de tasks (se muitas) */
+.tasks-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}
+
+.delete-task-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.delete-task-btn:hover {
+  color: #e00;
+}
+
+
+
+/* === BOTÕES GERAIS === */
 .btn {
   padding: 12px;
   color: white;
@@ -175,11 +316,6 @@ body.board-page {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.2s;
-}
-
-.column-options-btn {
-  z-index: 0;
-  position: relative;
 }
 
 .btn.btn-login:hover {
@@ -200,4 +336,130 @@ body.board-page {
 
 .btn.btn-cancel:hover {
   background-color: #1e8743;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modal-buttons .btn {
+  flex: 1;
+}
+
+.share-btn {
+  display: inline-flex;          /* para alinhar ícone e texto horizontalmente */
+  align-items: center;           /* alinhamento vertical */
+  gap: 6px;
+  padding: 6px 12px;             /* tamanho menor */
+  background-color: #104080;     /* cor de fundo */
+  color: white;                  /* texto branco */
+  border: none;                  /* sem borda */
+  border-radius: 4px;            /* cantos arredondados */
+  text-decoration: none;         /* tira sublinhado */
+  font-size: 0.9rem;             /* fonte menor */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.share-btn:hover {
+  background-color: #0d346b;     /* cor de hover */
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.task-main-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+}
+
+.task-name {
+  font-weight: bold;
+}
+
+.description-icon {
+  font-size: 0.85em;
+  color: #555;
+}
+
+.task-status-icon {
+  display: flex;
+  align-items: center;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.todo {
+  background-color: red;
+}
+
+.status-dot.doing {
+  background-color: orange;
+}
+
+.status-dot.done {
+  background-color: green;
+}
+
+
+/* --- MODAL --- */
+.modal-task {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-task.active {
+  display: flex;
+}
+
+.modal-task-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 10000;
+}
+
+.modal-task-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Visibilidade do modal controlada via JS */
+#create-board-modal.active {
+  display: flex !important;
 }

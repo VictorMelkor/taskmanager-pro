@@ -1,108 +1,75 @@
+console.log('delete_column.js carregado');
+
 document.addEventListener('DOMContentLoaded', () => {
-    const csrftoken = getCookie('csrftoken');
+    // Use só uma constante para o modal
+    const modal = document.getElementById('deleteColumnModal');
+    const closeModalBtn = document.getElementById('cancelDeleteColumn')
+    const confirmBtn = document.getElementById('confirmDeleteColumn');
+    const cancelBtn = document.getElementById('cancelDeleteColumnBtn');
+    let selectedColumnId = null;
+
+    function closeModal() {
+        selectedColumnId = null;
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.setAttribute('hidden', '');
+    }
 
     function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
+        const cookie = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+        return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
     }
 
-    // Abrir dropdown de opções da coluna (botão ...)
-    document.querySelectorAll('.column-options-btn').forEach(button => {
-        button.addEventListener('click', e => {
-            e.stopPropagation();
-            const dropdown = button.nextElementSibling;
-            dropdown.classList.toggle('show');
-            closeAllDropdowns(button);
-        });
-    });
+    function deleteColumn() {
+        const columnId = window.selectedColumnId;
+        if (!columnId) return;
 
-    // Fecha dropdown se clicar fora
-    window.addEventListener('click', () => {
-        closeAllDropdowns();
-    });
+        const url = window.deleteColumnUrlTemplate.replace('/0/', `/${columnId}/`);
 
-    function closeAllDropdowns(except = null) {
-        document.querySelectorAll('.column-options-dropdown.show').forEach(dropdown => {
-            if (!except || except.nextElementSibling !== dropdown) {
-                dropdown.classList.remove('show');
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
             }
-        });
-    }
-
-    // Abrir modal de confirmação de exclusão
-    const deleteModal = document.getElementById('deleteColumnModal');
-    const confirmDeleteBtn = deleteModal.querySelector('.confirm-delete');
-    const cancelDeleteBtn = deleteModal.querySelector('.cancel-delete');
-    let columnIdToDelete = null;
-    let urlDelete = null;
-
-    // Botão excluir no dropdown
-    document.querySelectorAll('.delete-column-btn').forEach(button => {
-        button.addEventListener('click', e => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            columnIdToDelete = button.dataset.columnId;
-            urlDelete = button.dataset.deleteUrl;
-
-            deleteModal.style.display = 'block';
-        });
-    });
-
-    // Cancelar exclusão
-    cancelDeleteBtn.addEventListener('click', () => {
-        deleteModal.style.display = 'none';
-        columnIdToDelete = null;
-        urlDelete = null;
-    });
-
-    // Confirmar exclusão
-    confirmDeleteBtn.addEventListener('click', async () => {
-        if (!columnIdToDelete || !urlDelete) return;
-
-        try {
-            const response = await fetch(urlDelete, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                // Remove coluna do DOM (correção da classe)
-                const colElem = document.querySelector(`.column-card[data-column-id="${columnIdToDelete}"]`);
-                if (colElem) colElem.remove();
-
-                deleteModal.style.display = 'none';
-                columnIdToDelete = null;
-                urlDelete = null;
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const column = document.querySelector(`.column-card[data-column-id="${columnId}"]`);
+                if (column) column.remove();
             } else {
-                alert(data.error || 'Erro ao excluir coluna');
+                alert(data.error || 'Erro ao excluir coluna.');
             }
-        } catch (error) {
-            alert('Erro na conexão');
+            closeModal();
+        })
+        .catch(() => {
+            alert('Erro ao excluir coluna.');
+            closeModal();
+        });
+    }
+
+    // Eventos
+    document.querySelectorAll('.delete-column-btn').forEach(button => {
+        button.addEventListener('click', () => openDeleteModal(button.dataset.columnId));
+    });
+
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    confirmBtn.addEventListener('click', deleteColumn);
+
+
+    // Fecha modal com ESC
+    window.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !modal.classList.contains('active')) {
+            closeModal();
         }
     });
 
-    // Fechar modal clicando fora
+    // Fecha modal clicando fora
     window.addEventListener('click', e => {
-        if (e.target === deleteModal) {
-            deleteModal.style.display = 'none';
-            columnIdToDelete = null;
-            urlDelete = null;
+        if (e.target === modal) {
+            closeModal();
         }
     });
 });

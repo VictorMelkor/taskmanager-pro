@@ -1,0 +1,73 @@
+    .mockup-carousel {
+    position: relative;
+    max-width: 900px; /* você ajusta */
+    margin: 40px auto;
+    margin-top: 600px;
+    overflow: hidden;
+    background: #f0f0f0;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+    }
+
+    .carousel-track-container {
+    overflow: hidden;
+    position: relative;
+    }
+
+    .carousel-track {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
+
+    .carousel-slide {
+    display: none;
+    text-align: center;
+    }
+
+    .carousel-slide.current-slide {
+    display: block;
+    }
+
+    .carousel-slide img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    }
+
+    .carousel-slide p {
+    font-size: 1.1rem;
+    color: #333;
+    }
+
+    .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(16, 64, 128, 0.8);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+    }
+
+    .carousel-btn:hover {
+    background: rgba(16, 64, 128, 1);
+    }
+
+    .carousel-btn.prev {
+    left: 10px;
+    }
+
+    .carousel-btn.next {
+    right: 10px;
+    }
+
+    

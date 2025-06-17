@@ -5,17 +5,25 @@
 
 {% block content %}
 <div class="home-container">
+    <h1 class="home-title">
+        Controle total dos seus projetos e tarefas
+    </h1>
     <p class="main-text">
-        Simplifique sua produtividade: gerencie suas tarefas e projetos com facilidade e eficiência.
+        Organize suas tarefas, acompanhe o progresso e colabore com sua equipe de forma simples e eficiente. Tudo isso com permissões flexíveis e foco em produtividade.
     </p>
 
     {% if not user.is_authenticated %}
         <div class="button-group">
-            <a href="{% url 'login' %}" class="btn btn-login">Entrar</a>
-            <a href="{% url 'signup' %}" class="btn btn-signup">Criar Conta</a>
+            <a href="{% url 'login' %}" class="btn btn-login" style="width: 40%;">Entrar</a>
+            <a href="{% url 'signup' %}" class="btn btn-signup" style="width: 40%;">Criar Conta</a>
         </div>
     {% else %}
         <a href="{% url 'dashboard' %}" class="btn btn-login">Ir para o Painel</a>
     {% endif %}
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}

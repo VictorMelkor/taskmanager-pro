@@ -6,7 +6,10 @@
     <meta charset="UTF-8" />
     <title>{% block title %}TaskManager Pro{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    {% block extra_head %}{% endblock %}
+    
+    {% block extra_head %}
+        <link rel="stylesheet" href="{% static 'css/pages/_board.css' %}">
+    {% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
     {% include 'includes/navbar.html' %}

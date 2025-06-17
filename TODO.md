@@ -1,23 +1,14 @@
-# TODO – Tarefas e Pendências
+## ✅ Pendências / Futuras Atualizações
 
-## Funcionalidades em Desenvolvimento
-
-- [ ] Finalizar views para aceitar convite, validar token e verificar expiração
-- [ ] Criar URLs específicas para convites via token
-- [ ] Templates para visualização e aceite de convite
-- [ ] Adicionar membro ao Board após aceite do convite
-- [ ] Criar notificações para convite enviado e aceito
-- [ ] Cancelamento manual e expiração automática de convites
-- [ ] Ajustar sistema de permissões com base em membros e convites
-- [ ] Finalizar criação automática de colunas padrão ao criar Board
-- [ ] Exibir tarefas em cards ordenados nas colunas
-- [ ] Implementar modal com detalhes da tarefa (sem AJAX por enquanto)
-- [ ] Login e cadastro via Google e Facebook com django-allauth
-- [ ] Refatorar operações do board para uso com AJAX (membros, colunas, tarefas)
-
-## Estudos Técnicos
-
-- [ ] Finalizar leitura da [documentação Django Auth](https://docs.djangoproject.com/en/4.2/topics/auth/)
-- [ ] Estudar `django-allauth` (configurações, social login)
-- [ ] Aprender integração com AJAX seguro no Django
-- [ ] Planejar testes automatizados (Pytest ou unittest)
+- [ ] Sistema de 2FA (dupla autenticação) — ainda não implementado  
+- [ ] Ordenação explícita das tarefas dentro das colunas — parcial, falta garantir ordenação na UI  
+- [ ] Checklist de tarefas com itens ordenados e completáveis — não implementado  
+- [ ] Upload e gerenciamento de anexos em tarefas — não implementado  
+- [ ] Sistema de comentários em tarefas com criação, edição e remoção — não implementado  
+- [ ] Troca de permissões e remoção de membros via frontend — não implementado  
+- [ ] Bloqueio e desbloqueio do quadro (“fechar quadro”) — não implementado  
+- [ ] Pesquisa e filtro dinâmico de tarefas e colunas — não implementado  
+- [ ] Interface drag-and-drop para mover colunas e tarefas — não implementado  
+- [ ] Notificações dinâmicas e em tempo real — não implementado (apenas notificações básicas)  
+- [ ] Integração completa com login social Google e Facebook — parcial, só configuração base, falta funcionalidade  
+- [ ] Validação e tratamento avançado de dados sensíveis para segurança — planejamento, não implementado

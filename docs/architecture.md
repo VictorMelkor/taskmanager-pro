@@ -9,82 +9,88 @@ TaskManager Pro é uma aplicação web fullstack com arquitetura MVC (Model–Vi
 ## Camadas e Componentes
 
 ### 🧠 Backend (Django)
-- **Core**: configurações globais, middlewares, roteamento base
-- **userauth**: autenticação, cadastro, login social, permissões
-- **tasks**: CRUD de tarefas, colunas, boards e lógica de organização
-- **pages**: páginas estáticas e views de navegação
-- **models**: modelagem relacional com uso de ForeignKey e UUIDs
+- **taskmanagerpro**: configurações globais, middlewares, roteamento base  
+- **userauth**: autenticação, cadastro, controle de permissões  
+- **boards**: CRUD de tarefas, colunas, boards e lógica de organização  
+- **pages**: páginas estáticas e views de navegação  
+- **models**: modelagem relacional com uso de ForeignKey e UUIDs  
 
 ### 🎨 Frontend (HTML/CSS/JS)
-- Templates Django renderizados server-side (com blocos reutilizáveis)
-- CSS customizado via `styles.css`, com estrutura BEM básica
-- JavaScript vanilla para modais e ações leves (ex: confirmação, toggle)
-- Estrutura planejada para futura migração parcial para AJAX
+- Templates Django renderizados server-side com blocos reutilizáveis  
+- CSS customizado em arquivos separados (`styles.css`), seguindo estrutura simples e organizada  
+- JavaScript vanilla para modais, confirmação e interações leves (toggle, fetch AJAX)  
+- Estrutura preparada para futura migração parcial para AJAX e frontend mais dinâmico  
 
 ---
 
 ## Fluxo de Acesso
 
-1. **Usuário acessa app:** verifica autenticação
-2. **Home:** redireciona para lista de Boards
-3. **Board selecionado:** exibe colunas e tarefas via Django Template
-4. **Permissões:** controladas pela model `BoardMember`
-5. **Ações:** criação/edição/remoção controladas por permissões no backend
+1. Usuário acessa a aplicação, sistema verifica autenticação  
+2. Usuário autenticado é redirecionado para lista de Boards  
+3. Seleção do Board exibe colunas e tarefas via templates Django  
+4. Permissões são controladas via modelo `BoardMember` e validadas no backend  
+5. Ações de criação, edição e remoção restritas conforme permissão do usuário  
 
 ---
 
 ## Segurança
 
-- CSRF ativo em todos formulários
-- Validação de permissões para cada view sensível
-- URLs com tokens UUID para convites
-- Uso de `get_object_or_404` para evitar acesso indevido
-- Planos futuros de rate-limiting e 2FA
+- CSRF habilitado em todos os formulários  
+- Validação rigorosa de permissões em todas as views sensíveis  
+- URLs protegidas por tokens UUID para convites  
+- Uso de `get_object_or_404` para evitar acesso indevido a objetos  
+- Planejamento futuro para implementação de 2FA e rate-limiting  
 
 ---
 
 ## Organização de Diretórios
+
 ```bash
 Taskmanager-pro/
 │
-├── taskmanagerpro/ # Configurações principais
-├── userauth/ # Autenticação e usuários
-├── boards/ # Lógica de tarefas, colunas, boards
+├── taskmanagerpro/      # Configurações principais do projeto
+├── userauth/            # Autenticação e gerenciamento de usuários
+├── boards/               # Lógica de tarefas, colunas e boards
+├── pages/               # Views e templates para páginas estáticas e navegação
 │
 ├── templates/
-│ ├── base.html
-│ ├── includes/ # Navbar, mensagens, etc
-│ ├── boards/ # Templates de tarefas e boards
-│ ├── userauth/ # Login, signup, etc
-│ └── pages/ # Home, dashboard, erro
+│   ├── base.html
+│   ├── includes/        # Navbar, mensagens, componentes reutilizáveis
+│   ├── boards/           # Templates de boards, colunas e tarefas
+│   ├── userauth/        # Login, cadastro, etc.
+│   └── pages/           # Home, dashboard, página de erro
 │
 ├── static/
-│ ├── css/
-│ │ └── styles.css
-│ ├── js/
-│ └── img/
+│   ├── css/
+│   │   └── styles.css
+│   ├── js/
+│   └── img/
 │
-├── docs/ # Documentação técnica
+├── docs/                # Documentação técnica
 │
 └── manage.py
 ```
 
-
----
-
 ## Dependências Externas
+django-allauth: suporte a login tradicional e via redes sociais (em planejamento)
 
-- **django-allauth**: login tradicional e via redes sociais
-- **Tailwind CSS (opcional)**: planeja-se adicionar para estilização
-- **uuid**: geração de tokens seguros para convites
-- **Vanilla JS**: modais e interações leves sem framework JS pesado
+uuid: geração de tokens seguros para convites
 
----
+Vanilla JS: manipulação de modais e interações leves sem frameworks pesados
+
+Tailwind CSS (opcional): planejado para futuras melhorias no estilo
 
 ## Extensões Futuras
+Migração para interações AJAX para atualização parcial do board
 
-- Integração AJAX para interações no board
-- Comentários e anexos em tarefas
-- Notificações em tempo real com WebSockets
-- API pública (Django REST Framework)
+Implementação de comentários e anexos em tarefas
 
+Sistema de notificações em tempo real via WebSockets
+
+API pública com Django REST Framework
+
+Implementação de 2FA e mecanismos avançados de segurança
+
+Interface drag-and-drop para movimentação de colunas e tarefas
+
+Sistema de checklist em tarefas com itens ordenados e completáveis

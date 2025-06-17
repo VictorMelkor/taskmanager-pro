@@ -1,0 +1,38 @@
+    {% load static permissions_tags %}
+
+    {% has_board_permission board "editor" as can_edit %}
+    {% has_board_permission board "moderator" as can_see %}
+    {% board_permission_label board as permission_label %}
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+    <ul class="sidebar-menu">
+            <li><a href="{% url 'dashboard' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        {% if can_see %}
+            <li><a href="{% url 'board_manage_members' board.created_by.username board.slug %}"><i class="fas fa-users"></i> Membros</a></li>
+        {% endif %}  
+        {% if can_edit %}
+            <li><a href="{% url 'board_edit' username=board.created_by.username slug=board.slug %}"><i class="fas fa-cog"></i> Configurações</a></li>
+        {% endif %}  
+        {% if show_back_link %}
+            <li><a href="{% url 'board_detail' board.created_by.username board.slug %}"><i class="fas fa-arrow-left"></i> Voltar ao quadro</a></li>
+        {% endif %}
+    </ul>
+    </aside>
+
+    <!-- Navbar -->
+    <div class="board-topbar">
+    <div class="board-name">{{ board.name }}</div>
+    <div class="permission-level">{{ permission_label }}</div>
+    <div class="board-actions">
+        <input type="text" placeholder="Pesquisar..." aria-label="Pesquisar tarefas" />
+        {% if can_see %}
+        <a href="{% url 'board_manage_members' board.created_by.username board.slug %}" class="share-btn">
+        <i class="fas fa-share-alt"></i> Compartilhar
+        </a>
+
+
+
+        {% endif %}
+    </div>
+    </div>

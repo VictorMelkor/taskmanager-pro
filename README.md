@@ -7,14 +7,13 @@
 
 ## 🚀 Sobre o Projeto
 
-askManager Pro é um gerenciador de tarefas com criação, edição e exclusão de boards, colunas e tarefas. Implementa níveis granulares de permissão: **owner**, **moderator**, **editor** e **viewer**.  
+TaskManager Pro é um gerenciador de tarefas com criação, edição e exclusão de boards, colunas e tarefas. Implementa níveis granulares de permissão: **owner**, **moderator**, **editor** e **viewer**.  
 Autenticação com django-allauth (login padrão e social Google/Facebook). Segurança com validação de permissões no backend e uso de tokens CSRF.
 
 ---
 
 > ⚠️ **Status do Projeto:**  
 > Este projeto está em desenvolvimento ativo. Funcionalidades serão adicionadas, ajustadas e otimizadas continuamente. Use com cuidado e acompanhe os commits para atualizações.
-
 
 ## 🛠 Tecnologias
 
@@ -41,16 +40,16 @@ Autenticação com django-allauth (login padrão e social Google/Facebook). Segu
 
 ---
 
-
 ## 💻 Como Rodar Localmente
 
 1. Clone o repositório  
    ```bash
    git clone https://github.com/victormelkor/taskmanager-pro.git
    cd taskmanager-pro
-   
+    ```
+
 2. Crie e ative um ambiente virtual Python (recomendado)
-   ```bash
+    ```bash
     python -m venv venv
     source venv/bin/activate  # Linux/macOS
     venv\Scripts\activate     # Windows
@@ -60,10 +59,12 @@ Autenticação com django-allauth (login padrão e social Google/Facebook). Segu
     ```bash
     pip install -r requirements.txt
     ```
-4. Rode as migrações
+
+4. Rode as Migrações
     ```bash
     python manage.py migrate
     ```
+
 5. Crie um superusuário (opcional)
     ```bash
     python manage.py createsuperuser
@@ -76,17 +77,53 @@ Autenticação com django-allauth (login padrão e social Google/Facebook). Segu
 
 7. Acesse http://127.0.0.1:8000/ no navegador
 
----
+--- 
 
----
 ## 📚 Documentação
 
 - [Modelagem de Dados](docs/database_schema.md)  
 - [Notas de Desenvolvimento](docs/dev_notes.md)  
 - [Tarefas e Pendências](TODO.md)
 
-
 ---
+
+### 📁 `docs/architecture.md`
+
+```bash
+    # Arquitetura – TaskManager Pro
+
+    ## Visão Geral
+
+    Projeto Django modularizado com foco em colaboração, permissões e segurança. Cada app tem responsabilidade única, usando CBVs, formulários e autenticação customizada.
+
+    ---
+
+    ## Camadas
+
+    - **userauth/** – login, cadastro, permissões, social login  
+    - **tasks/** – boards, colunas, tarefas, convites  
+    - **templates/** – HTML modular (base + includes + apps)  
+    - **static/** – CSS, JS e imagens
+
+    ---
+
+    ## Fluxo
+
+    1. Acesso exige login  
+    2. Home → lista de boards  
+    3. Ações baseadas nas permissões (`BoardMember`)  
+    4. Convites via token UUID com expiração
+
+    ---
+
+    ## Segurança
+
+    - CSRF tokens  
+    - Validação de permissões no backend  
+    - Tokens UUID para convites  
+    - `get_object_or_404` em views críticas
+```
+
 
 ## 🤝 Como Contribuir
 1. Fork este repositório
@@ -108,99 +145,70 @@ Autenticação com django-allauth (login padrão e social Google/Facebook). Segu
 
 5. Abra um Pull Request no GitHub para revisão
 
+---
+
 ## 📝 Considerações Finais
 Este projeto foi desenvolvido para demonstrar habilidades fullstack em Python/Django e integração frontend-backend, com foco em boas práticas de código, segurança e UX básico. Serve como portfólio para oportunidades na área de desenvolvimento web.
 
+
 ## 📄 Licença
+
 MIT License © Victor Rodrigues
 
-GitHub:  [victormelkor](https://github.com/victormelkor)
+GitHub: [victormelkor](https://github.com/victormelkor)
 
-
----
-
-### 📁 `docs/architecture.md`
-
-```markdown
-# Arquitetura – TaskManager Pro
-
-## Visão Geral
-
-Projeto Django modularizado com foco em colaboração, permissões e segurança. Cada app tem responsabilidade única, usando CBVs, formulários e autenticação customizada.
-
----
-
-## Camadas
-
-- **userauth/** – login, cadastro, permissões, social login
-- **tasks/** – boards, colunas, tarefas, convites
-- **templates/** – HTML modular (base + includes + apps)
-- **static/** – CSS, JS e imagens
-
----
-
-## Fluxo
-
-1. Acesso exige login
-2. Home → lista de boards
-3. Ações baseadas nas permissões (`BoardMember`)
-4. Convites via token UUID com expiração
-
----
-
-## Segurança
-
-- CSRF tokens
-- Validação de permissões no backend
-- Tokens UUID para convites
-- `get_object_or_404` em views críticas
-
-```
----
 
 ## Estrutura
-```bash
-Taskmanager-pro/
-│
-├── taskmanagerpro/ # Configurações principais
-├── userauth/ # Autenticação e usuários
-├── boards/ # Lógica de tarefas, colunas, boards
-│
-├── templates/
-│ ├── base.html
-│ ├── includes/ # Navbar, mensagens, etc
-│ ├── boards/ # Templates de tarefas e boards
-│ ├── userauth/ # Login, signup, etc
-│ └── pages/ # Home, dashboard, erro
-│
-├── static/
-│ ├── css/
-│ │ └── styles.css
-│ ├── js/
-│ └── img/
-│
-├── docs/ # Documentação técnica
-│
-└── manage.py
+```bash    
+    Taskmanager-pro/
+    │
+    ├── taskmanagerpro/ # Configurações principais
+    ├── userauth/       # Autenticação e usuários
+    ├── boards/         # Lógica de tarefas, colunas, boards
+    │
+    ├── templates/
+    │ ├── base.html
+    │ ├── includes/     # Navbar, mensagens, etc
+    │ ├── boards/       # Templates de tarefas e boards
+    │ ├── userauth/     # Login, signup, etc
+    │ └── pages/        # Home, dashboard, erro
+    │
+    ├── static/
+    │ ├── css/
+    │ │ └── styles.css
+    │ ├── js/
+    │ └── img/
+    │
+    ├── docs/           # Documentação técnica
+    │
+    └── manage.py
 ```
+
+
+
+## Futuro (Roadmap)
+• Completar funcionalidades AJAX para edição dinâmica de tarefas e colunas
+
+• Implementar notificações via WebSocket
+
+• Desenvolver API REST com Django REST Framework para integração futura
+
+• Adicionar suporte a comentários e anexos nas tarefas
+
+• Melhorar frontend com CSS organizado e responsivo
+
+• Automatizar criação de colunas padrão ao criar novo board
+
+• Modal para visualização e edição rápida de tarefas (sem recarregar página)
+
+• Controle refinado de permissões e fluxos de convite
+
+• Refinar testes automatizados e documentação
 
 ---
 
-## Futuro (Roadmap)
-
-- Completar funcionalidades AJAX para edição dinâmica de tarefas e colunas
-- Implementar notificações via WebSocket
-- Desenvolver API REST com Django REST Framework para integração futura
- -Adicionar suporte a comentários e anexos nas tarefas
-- Melhorar frontend com CSS organizado e responsivo
-- Automatizar criação de colunas padrão ao criar novo board
-- Modal para visualização e edição rápida de tarefas (sem recarregar página)
-- Controle refinado de permissões e fluxos de convite
-- Refinar testes automatizados e documentação
-
-
 ## Contato
-GitHub:  [victormelkor](https://github.com/victormelkor)
 
+GitHub: [victormelkor](https://github.com/victormelkor)
 
 Email: victor.melkor@gmail.com

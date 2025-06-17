@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% load static %}
 {% load permissions_tags %}
 
@@ -11,62 +12,56 @@
 {% block body_class %}board-page{% endblock %}
 
 {% block content %}
+{% include 'includes/board_nav.html' %}
 {% has_board_permission board "editor" as can_edit %}
 {% board_permission_label board as permission_label %}
 
 <div class="page-body">
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <ul class="sidebar-menu">
-      <li><a href="{% url 'dashboard' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
-      <li><a href="{% url 'board_edit' username=board.created_by.username slug=board.slug %}"><i class="fas fa-cog"></i> Configurações</a></li>
-    </ul>
-  </aside>
-
-  <!-- Navbar -->
-  <div class="board-topbar">
-    <div class="board-name">{{ board.name }}</div>
-    <div class="permission-level">{{ permission_label }}</div>
-    <div class="board-actions">
-      <input type="text" placeholder="Pesquisar..." />
-      {% if can_edit %}
-        <button class="share-btn"><i class="fas fa-share-alt"></i> Compartilhar</button>
-      {% endif %}
-    </div>
-  </div>
-
   <!-- Colunas -->
   <div class="board-columns-wrapper">
     <div class="board-columns">
-      {% for column in columns %}
-        <section class="column-card" data-column-id="{{ column.id }}">
-          <header class="column-header" data-column-id="{{ column.id }}">
-            <span class="column-name" tabindex="0" role="button" aria-label="Editar nome da coluna">{{ column.name }}</span>
+      {% if columns %}
+        {% for column in columns %}
+          <section class="column-card" data-column-id="{{ column.id }}" data-add-task-url="{% url 'add_task' username=board.created_by.username slug=board.slug column_id=column.id %}">
+            <header class="column-header" data-column-id="{{ column.id }}">
+              <span class="column-name" tabindex="0" role="button" aria-label="Editar nome da coluna">{{ column.name }}</span>
+              {% if can_edit %}
+                <button class="delete-column-btn" data-column-id="{{ column.id }}" aria-label="Excluir coluna">
+                  <i class="fas fa-times"></i>
+                </button>
+              {% endif %}
+            </header>
+
+            <div class="tasks-container">
+              {% for task in column.task_set.all %}
+                  <section class="task-card" 
+                    data-task-id="{{ task.id }}" 
+                    data-task-description="{{ task.description|escapejs }}" 
+                    data-task-status="{{ task.status }}" 
+                    data-column-id="{{ column.id }}">
+                    <header class="task-header" data-task-id="{{ task.id }}">
+                      <div class="task-main-info">
+                        <span class="task-name" tabindex="0" role="button" aria-label="Editar nome da Task">{{ task.name }}</span>
+                        {% if task.description %}
+                          <i class="fas fa-align-left description-icon"></i>
+                        {% endif %}
+                      </div>
+                      <div class="task-status-icon">
+                        <span class="status-dot {{ task.status }}"></span>
+                      </div>
+                    </header>
+                  </section>
+              {% endfor %}
+            </div>
 
             {% if can_edit %}
-              <button class="column-options-btn" aria-label="Opções da coluna">
-                <i class="fas fa-ellipsis-h"></i>
-              </button>
-
-              <div class="column-options-dropdown" style="display:none;">
-                <button class="move-column-btn" disabled>Mover coluna</button>
-                <button class="delete-column-btn"
-                        data-column-id="{{ column.id }}"
-                        data-delete-url="{% url 'column_delete_ajax' username=board.created_by.username slug=board.slug pk=column.id %}">
-                  Excluir
-                </button>
+              <div class="column add-task-container" data-add-task-url="{% url 'add_task' username=board.created_by.username slug=board.slug column_id=column.id %}">
+                <button class="add-task-btn" style="width: 100%">+ Adicionar tarefa</button>
               </div>
             {% endif %}
-          </header>
-
-          <div class="tasks-container"></div>
-
-          {% if can_edit %}
-            <button class="add-task-btn">+ Adicionar tarefa</button>
-          {% endif %}
-        </section>
-      {% endfor %}
+          </section>
+        {% endfor %}
+      {% endif %}
 
       {% if can_edit %}
         <section class="column-card create-column">
@@ -79,45 +74,106 @@
     </div>
 
     {% if can_edit %}
-      <!-- Modal de adicionar coluna (fora da div board-columns para não quebrar layout) -->
-      <div id="addColumnModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="add-column-title" tabindex="-1" hidden>
+      <!-- Modal de adição de coluna -->
+      <div id="addColumnModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="add-column-title" tabindex="-1">
         <div class="modal-content">
           <button id="cancelAddColumn" class="modal-close-btn" aria-label="Fechar modal">&times;</button>
           <h3 id="add-column-title">Adicionar nova coluna</h3>
           <form id="addColumnForm" novalidate>
-            <input type="text" name="name" placeholder="Nome da coluna" required maxlength="100" aria-label="Nome da coluna" class="input-field" />
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Nome da coluna" required maxlength="100" aria-label="Nome da coluna" class="input-field" autofocus />
             <div class="modal-buttons" style="margin-top: 16px;">
               <button type="submit" class="btn btn-login" style="width: 100%;">Criar</button>
             </div>
           </form>
         </div>
       </div>
+
+      <!-- Modal de exclusão de coluna -->
+      <div id="deleteColumnModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="delete-column-title" tabindex="-1">
+        <div class="modal-content">
+          <button id="cancelDeleteColumn" class="modal-close-btn" aria-label="Fechar modal">&times;</button>
+          <h3 id="delete-column-title">Confirmar exclusão</h3>
+          <p>Tem certeza que deseja excluir esta coluna?</p>
+          <p>Esta ação não pode ser desfeita.</p>
+          <div class="modal-buttons" style="margin-top: 16px;">
+            <button id="confirmDeleteColumn" class="btn btn-delete" style="width: 100%;">Excluir</button>
+            <button id="cancelDeleteColumnBtn" class="btn btn-cancel" style="width: 100%;">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de tarefas -->
+      <div id="editTaskModal" class="modal-task" role="dialog" aria-modal="true" aria-labelledby="edit-task-title" tabindex="-1">
+        <div class="modal-task-content">
+          <button id="closeEditTaskModal" class="modal-task-close-btn" aria-label="Fechar modal">&times;</button>
+          <h3 id="edit-task-title">Editar Tarefa</h3>
+          <form id="editTaskForm" novalidate>
+            {% csrf_token %}
+            <input type="hidden" id="editTaskId" name="task_id" />
+
+            <label for="editTaskName">Nome</label>
+            <input type="text" id="editTaskName" name="name" required maxlength="50" class="input-field" />
+
+            <label for="editTaskDescription">Descrição</label>
+            <textarea id="editTaskDescription" name="description" class="input-field"></textarea>
+
+            <label for="editTaskStatus">Status</label>
+            <select id="editTaskStatus" name="status" class="input-field" required>
+              <option value="todo">Pendente</option>
+              <option value="doing">Em andamento</option>
+              <option value="done">Concluído</option>
+            </select>
+
+            <div class="modal-task-buttons" style="margin-top: 16px;">
+              <button type="submit" class="btn btn-login" style="width: 100%;">Salvar</button>
+              <button type="button" id="openDeleteTaskModal" class="btn btn-delete" style="width: 100%; margin-top: 8px;">
+                Excluir
+              </button>
+
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal de exclusão de tarefas -->
+      <div id="deleteTaskModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-task-title" tabindex="-1">
+        <div class="modal-content">
+          <button id="closeDeleteModalBtn" class="modal-close-btn" aria-label="Fechar modal">&times;</button>
+          <h3 id="delete-task-title">Confirmar exclusão</h3>
+          <p>Tem certeza que deseja excluir esta tarefa?</p>
+          <p>Esta ação não pode ser desfeita.</p>
+          <div class="modal-buttons" style="margin-top: 16px;">
+            <button id="confirmDeleteTask" class="btn btn-delete" style="width: 100%;">Excluir</button>
+            <button id="cancelDeleteTask" class="btn btn-cancel" style="width: 100%;">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
     {% endif %}
   </div>
-
 </div>
-
-{% if can_edit %}
-  <!-- Modal de exclusão da coluna -->
-  <div id="deleteColumnModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <h3>Excluir coluna</h3>
-      <p>Tem certeza que deseja excluir esta coluna? Essa ação não pode ser desfeita.</p>
-      <div class="modal-buttons">
-        <button class="confirm-delete btn btn-danger">Excluir</button>
-        <button class="cancel-delete btn btn-secondary">Cancelar</button>
-      </div>
-    </div>
-  </div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
   window.username = "{{ board.created_by.username }}";
   window.slug = "{{ board.slug }}";
+  window.deleteColumnUrlTemplate = "{% url 'column_delete_ajax' username=board.created_by.username slug=board.slug pk=0 %}";
+  
+  window.columnIdsByTask = {};
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.task-card').forEach(taskCard => {
+      window.columnIdsByTask[taskCard.dataset.taskId] = taskCard.dataset.columnId;
+    });
+  });
 </script>
 
+<script src="{% static 'js/column_utils.js' %}"></script>
 <script src="{% static 'js/column_edit.js' %}"></script>
+<script src="{% static 'js/delete_column.js' %}"></script>
 <script src="{% static 'js/add_column.js' %}"></script>
+<script src="{% static 'js/add_task.js' %}"></script>
+<script src="{% static 'js/edit_task.js' %}"></script>
+<script src="{% static 'js/delete_task.js' %}"></script>
 {% endblock %}

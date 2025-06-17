@@ -1,62 +1,122 @@
 {% extends 'base.html' %}
+
 {% load static %}
+{% load permissions_tags %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages/_board.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages/_board_settings.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+{% endblock %}
+
+{% block body_class %}board-page{% endblock %}
 
 {% block content %}
-<h1>Editar Board "{{ board.name }}"</h1>
+    {% include 'includes/board_nav.html' with board=board show_back_link=True %}
+    {% has_board_permission board "moderator" as can_edit %}
+    {% board_permission_label board as permission_label %}
+    
 
-<form method="post" action="">
-    {% csrf_token %}
-    {{ board_form.as_p }}
-    <button type="submit" name="save_board" class="bg-blue-500 text-white px-4 py-2 rounded">Salvar alterações</button>
-</form>
 
-<hr/>
 
-<h2>Membros</h2>
-<ul>
-    {% for member in members %}
-        <li>
-            {{ member.member.username }} - {{ member.permission }}
-            {% if member.permission != 'owner' %}
-                <form method="post" action="" style="display:inline;" onsubmit="return confirm('Deseja mesmo {% if member.member == request.user %}sair do board{% else %}remover este membro{% endif %}?');">
+    <div><h1>Editar Board "{{ board.name }}"</h1></div>
+
+    <div class="containers-wrapper">
+        <div class="edit-board-container">
+            <!-- Formulário principal -->
+            <form method="post" action="">
+                {% csrf_token %}
+                <div style="margin-bottom: 16px; text-align: left;">
+                    <label for="id_name" style="margin-bottom: 4px; display: inline-block;">Nome do Quadro:</label><br>
+                    {{ board_form.name }}
+                </div>
+                <div style="margin-bottom: 16px; text-align: left;">
+                    <label for="id_description" style="margin-bottom: 4px; display: inline-block;">Descrição:</label><br>
+                    {{ board_form.description }}
+                </div>
+                <div style="margin-bottom: 16px; text-align: left;">
+                    <label style="margin-bottom: 4px; display: inline-block;">Cor do Quadro:</label><br><br>
+                    <div class="color-selection">
+                        <input type="radio" id="color-blue" name="color_theme" value="theme2" {% if board.color_theme == "theme2" %}checked{% endif %} hidden>
+                        <label for="color-blue" class="color-option color-blue"></label>
+
+                        <input type="radio" id="color-green" name="color_theme" value="theme3" {% if board.color_theme == "theme3" %}checked{% endif %} hidden>
+                        <label for="color-green" class="color-option color-green"></label>
+
+                        <input type="radio" id="color-red" name="color_theme" value="theme1" {% if board.color_theme == "theme1" %}checked{% endif %} hidden>
+                        <label for="color-red" class="color-option color-red"></label>
+
+                        <input type="radio" id="color-yellow" name="color_theme" value="theme4" {% if board.color_theme == "theme4" %}checked{% endif %} hidden>
+                        <label for="color-yellow" class="color-option color-yellow"></label>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="submit" class="btn btn-login" style="width: 100%;" name="save_board">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+
+        {% if can_edit %}
+        <div class="right-column">
+            <div class="edit-board-container">
+                <!-- Formulários de notificações e fechar quadro -->
+                <form method="post" action="">
                     {% csrf_token %}
-                    <button type="submit" name="remove_member" value="{{ member.id }}"
-                        class="text-red-600 underline bg-transparent border-0 cursor-pointer">
-                        {% if member.member == request.user %}Sair do board{% else %}Remover{% endif %}
+                    <label for="id_notifications_enabled">
+                        <input type="checkbox" id="id_notifications_enabled" name="notifications_enabled" {% if board.notifications_enabled %}checked{% endif %} onchange="this.form.submit()">
+                        Ativar notificações (em desenvolvimento)
+                    </label>
+                </form>
+
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <label for="id_is_closed">
+                        <input type="checkbox" id="id_is_closed" name="is_closed" {% if board.is_closed %}checked{% endif %} onchange="this.form.submit()">
+                        Fechar quadro (bloqueia acesso para todos exceto proprietário)
+                    </label>
+                </form>
+            </div>
+
+            <div class="edit-board-container">
+                <a href="{% url 'board_manage_members' username=board.created_by.username slug=board.slug %}" class="btn btn-login">
+                    Gerir Membros
+                </a>
+            </div>
+            {% endif %}
+
+            
+            {% if user == board.created_by %}
+            <div class="edit-board-container">
+                <!-- Exclusão do quadro -->
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <button type="button" id="open-delete-modal" class="btn-delete">
+                        Excluir quadro
                     </button>
                 </form>
+            </div>
+
+            
+            <div id="delete-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-board-title" tabindex="-1">
+                <div class="modal-content">
+                    <h3>Tem certeza que deseja excluir o quadro "{{ board.name }}"?</h3>
+                    <p>Essa ação é irreversível e apagará todo o conteúdo do quadro.</p>
+                    <form method="post" action="">
+                    {% csrf_token %}
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" name="delete_board" class="btn btn-delete" style="flex: 1;">Confirmar exclusão</button>
+                        <button type="button" id="cancel-delete" class="btn btn-cancel" style="flex: 1;">Cancelar</button>
+                    </div>
+                </form>
+                </div>
+            </div>
             {% endif %}
-        </li>
-    {% empty %}
-        <li>Sem membros ainda.</li>
-    {% endfor %}
-</ul>
+        </div>
+    </div>
+{% endblock %}
 
-<hr/>
-
-<h2>Gerar link de convite</h2>
-<form id="invite-form" method="post" action="{% url 'create_board_invite' username=board.created_by.username slug=board.slug %}">
-    {% csrf_token %}
-    {{ invite_form.as_p }}
-    <button type="submit" class="btn">
-        Gerar link de convite (válido por 7 dias)
-    </button>
-</form>
-
-<div id="invite-response" class="mt-4 text-green-700"></div>
-
-
-{% if invite_link %}
-    <p>Link de convite: <a href="{{ invite_link }}">{{ invite_link }}</a></p>
-{% endif %}
-
-{% if messages %}
-    {% for message in messages %}
-        <p class="mt-4 text-green-700">{{ message }}</p>
-    {% endfor %}
-{% endif %}
-
-<a href="#" class="text-blue-500 hover:underline mt-6 block">← Voltar ao Quadro</a>
-<a href="{% url 'dashboard' %}" class="text-blue-500 hover:underline mt-6 block">← Voltar ao painel</a>
-<script src="{% static 'js/board_invite.js' %}"></script>
+{% block extra_js %}
+    <script src="{% static 'js/board_delete.js' %}" defer></script>
 {% endblock %}

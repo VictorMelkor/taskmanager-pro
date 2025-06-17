@@ -1,0 +1,337 @@
+/* === RESET E BASE === */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+
+body.board-page {
+  min-height: 100vh;
+  height: 100%;
+  overflow: auto;
+  padding-top: 120px; /* espaço para navbar fixa */
+  background-color: #f5f7fa !important;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.main-content {
+  flex-grow: 1;
+  max-width: 1000px;
+  margin: 0 auto 40px auto;
+  width: 100%;
+  padding: 20px;
+  padding-top: 0px;
+  
+  background: #fff;
+  box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+  border-radius: 8px;
+}
+
+.main-content h1 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Base para containers de edição no board */
+.edit-board-container {
+    max-width: 700px;
+    width: 100%; /* ajusta para preencher o espaço disponível */
+    background: #fefefe;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: left;
+    position: static;
+    transform: none;
+}
+
+/* Wrapper que segura as duas colunas */
+.containers-wrapper {
+    display: flex;
+    gap: 40px;
+    max-width: 1000px;
+    margin: 40px auto;
+    justify-content: center;
+    align-items: stretch; /* forçar altura igual */
+    flex-wrap: nowrap; /* sem quebra */
+}
+
+/* Containers filhos, esquerda e direita */
+.containers-wrapper > .edit-board-container {
+    flex: 1 1 45%;
+}
+
+/* Coluna direita que tem as 3 divs */
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1 1 45%;
+    height: 100%; /* força preencher altura do wrapper */
+}
+
+/* Faz as 3 divs filhas da right-column ocuparem espaço igual */
+.right-column > .edit-board-container {
+    flex: 1; /* dividem a altura igualmente */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.edit-board-container .input-field {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 12px;
+}
+
+.edit-board-container button {
+    margin-top: 8px;
+}
+
+
+
+.delete-board-container {
+    max-width: 700px;
+    width: 90%;
+    background: #fefefe;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 40px auto;
+    text-align: left;
+    position: static; /* tira o absolute */
+    transform: none;
+}
+
+
+/* Botão de exclusão com destaque */
+.delete-board-section .btn-delete {
+    background-color: #c53030;
+    color: white;
+    border: none;
+    padding: 16px 0;          
+    border-radius: 10px;      
+    cursor: pointer;
+    font-weight: 700;         
+    font-size: 1.1rem;        
+    width: 100%;              
+    box-sizing: border-box;   
+    text-align: center;       
+    user-select: none;        
+    transition: background-color 0.3s ease; 
+}
+
+.delete-board-section .btn-delete:hover {
+    background-color: #9b2c2c;
+}
+
+/* Links de navegação */
+.navigation-links a {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #2b6cb0;
+    text-decoration: none;
+}
+
+.navigation-links a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .edit-board-container,
+    .permission-section,
+    .notifications-section,
+    .close-board-section,
+    .delete-board-section,
+    .navigation-links {
+        width: 95%;
+        margin: 20px auto;
+        padding: 15px 10px;
+    }
+}
+
+
+/* Botões gerais */
+.buttons {
+  margin-top: 15px;
+}
+
+button {
+  background-color: #0069d9;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #0053ba;
+}
+
+/* Botão excluir separado, vermelho */
+.btn-delete {
+  background-color: #d9534f;
+  width: 100%;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+.btn-delete:hover {
+  background-color: #c9302c;
+}
+
+/* Estilo para labels e selects */
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+select, input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* Navegação */
+.navigation-links a {
+  display: inline-block;
+  margin-top: 10px;
+  color: #0069d9;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.navigation-links a:hover {
+  text-decoration: underline;
+}
+
+/* --- MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 10000;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Visibilidade do modal controlada via JS */
+#create-board-modal.active {
+  display: flex !important;
+}
+
+.btn {
+  padding: 12px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.btn.btn-login:hover {
+  background-color: #00408f;
+}
+
+.btn.btn-delete {
+  background-color: #db4437;
+}
+
+.btn.btn-delete:hover {
+  background-color: #b33629;
+}
+
+.btn.btn-cancel {
+  background-color: #27ae60;
+}
+
+.btn.btn-cancel:hover {
+  background-color: #1e8743;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modal-buttons .btn {
+  flex: 1;
+}
+
+.permission-level {
+  font-size: 0.9rem;
+  background-color: #d0e3ff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-block;
+  vertical-align: middle;
+  user-select: none;
+  color: #333;
+}
+
+input#inviteLink {
+  width: 100%;
+  margin: 10px 0;
+}
+
+#inviteLink {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  padding: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

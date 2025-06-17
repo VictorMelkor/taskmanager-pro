@@ -1,4 +1,4 @@
-console.log('column_edit.js carregado');
+console.log('add_column.js carregado');
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeAllColumns();
@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Inicializa a edição do nome para um span específico
 function initializeColumnNameEdit(span) {
-    span.addEventListener('click', () => {
+    span.addEventListener('click', (e) => {
+        e.stopPropagation(); // impede fechamento do dropdown ao clicar para editar
+
         console.log('clicou no nome da coluna');
 
         if (span.querySelector('input')) return; // já em edição
@@ -22,6 +24,7 @@ function initializeColumnNameEdit(span) {
         input.focus();
 
         const cancelEdit = () => {
+            input.removeEventListener('blur', saveEdit);
             span.textContent = oldName;
         };
 
@@ -63,6 +66,7 @@ function initializeColumnNameEdit(span) {
                 e.preventDefault();
                 input.blur();
             } else if (e.key === 'Escape') {
+                e.preventDefault();
                 cancelEdit();
             }
         });
@@ -74,33 +78,12 @@ function initializeAllColumns() {
     document.querySelectorAll('.column-name').forEach(span => {
         initializeColumnNameEdit(span);
     });
-
-    initializeColumnOptionsButtons();
 }
 
-// Aqui deve ter a função que inicializa os botões de opções e adicionar tarefa, por exemplo:
-function initializeColumnOptionsButtons() {
-    // Exemplo simples, adapte conforme seu código real
-    document.querySelectorAll('.column-options-btn').forEach(btn => {
-        btn.addEventListener('click', e => {
-            const dropdown = btn.nextElementSibling;
-            if (dropdown) {
-                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-            }
-        });
-    });
-
-    // Também pode adicionar listeners para botões de excluir, mover, adicionar tarefa etc
-}
-
-// Exporta essa função para usar no JS que cria a nova coluna
+// Exporta para uso externo
 function initializeNewColumn(columnElement) {
     const nameSpan = columnElement.querySelector('.column-name');
     if (nameSpan) initializeColumnNameEdit(nameSpan);
-
-    initializeColumnOptionsButtons();
-
-    // Inicialize outros botões da coluna (ex: add-task-btn) se necessário
 }
 
 // Função para pegar CSRF cookie (padrão Django)

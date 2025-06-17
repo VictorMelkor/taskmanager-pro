@@ -19,7 +19,7 @@ html body.dashboard-page {
 .dashboard-layout {
   display: flex;
   min-height: calc(100vh - 70px);
-  margin-top: 70px;
+  margin-top: 10px;
   justify-content: center;
   align-items: flex-start;
   max-width: 1200px;
@@ -137,6 +137,30 @@ html body.dashboard-page {
 .board-theme-theme4 {
   border: none;
   background: linear-gradient(135deg, #ff6a00, #ee0979);
+  color: white;
+}
+
+.board-theme-theme5 {
+  border: none;
+  background: linear-gradient(135deg, #8e2de2, #4a00e0); /* Roxo */
+  color: white;
+}
+
+.board-theme-theme6 {
+  border: none;
+  background: linear-gradient(135deg, #616161, #9e9e9e); /* Cinza */
+  color: white;
+}
+
+.board-theme-theme7 {
+  border: none;
+  background: linear-gradient(135deg, #00c9ff, #92fe9d); /* Ciano */
+  color: white;
+}
+
+.board-theme-theme8 {
+  border: none;
+  background: linear-gradient(135deg, #4e342e, #795548); /* Marrom */
   color: white;
 }
 

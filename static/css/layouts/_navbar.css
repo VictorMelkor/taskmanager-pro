@@ -61,6 +61,11 @@ nav {
     display: none; /* Chrome, Safari, Edge */
 }
 
+.nav-right li {
+    display: flex;
+    align-items: center;
+}
+
 .nav-right li a,
 .nav-right li form button {
     color: white;
@@ -76,4 +81,30 @@ nav {
 .nav-right li a:hover,
 .nav-right li form button:hover {
     text-decoration: underline;
+}
+
+/* Adicionado para alinhamento correto do botão "Sair" */
+.nav-right li form {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin: 0; /* remove margens padrão do form */
+    padding: 0;
+}
+
+.nav-right li form button {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 60px;  /* igual à altura da navbar */
+    height: 60px;
+    padding: 0 10px;
+    background: none;
+    border: none;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    white-space: nowrap;
+    position: relative;
+    top: 2px;
 }

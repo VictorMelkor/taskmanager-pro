@@ -13,6 +13,10 @@ class Board(models.Model):
         ('theme2', 'Degradê Azul'),
         ('theme3', 'Degradê Verde'),
         ('theme4', 'Degradê Rosa'),
+        ('theme5', 'Degradê Roxo'),
+        ('theme6', 'Degradê Cinza'),
+        ('theme7', 'Degradê Ciano'),
+        ('theme8', 'Degradê Marrom'),
     ]
 
     IMAGE_CHOICES = [
@@ -138,7 +142,7 @@ class Column(models.Model):
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
 
 class Task(models.Model):
     """
@@ -158,3 +162,12 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='todo')
+
+
+    def __str__(self):
+        return self.name
+
+
+
+
+    
