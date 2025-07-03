@@ -17,12 +17,34 @@ Autenticação com django-allauth (login padrão e social Google/Facebook). Segu
 
 ## 🛠 Tecnologias
 
+<p>
+  <!-- Backend -->
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django" />
+  
+  <!-- Frontend -->
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+
+  <!-- Banco de Dados -->
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
+  
+  <!-- Autenticação -->
+  <img src="https://img.shields.io/badge/django--allauth-009688?style=for-the-badge&logo=django&logoColor=white" alt="django-allauth" />
+
+  <!-- Git -->
+  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
+</p>
+
 - **Backend:** Python 3, Django 4.x  
 - **Frontend:** HTML5, CSS3 (Tailwind CSS para estilização básica sem frameworks pesados), JavaScript (Vanilla)  
 - **Banco de dados:** SQLite (para desenvolvimento)  
 - **Autenticação:** django-allauth (login, registro, social login Google e Facebook)  
 - **Controle de versão:** Git  
 - **Hospedagem local:** `python manage.py runserver`
+
 
 ---
 
@@ -207,8 +229,7 @@ GitHub: [victormelkor](https://github.com/victormelkor)
 
 ---
 
-## Contato
+## 📬 Contato
+Entre em contato ou siga:
 
-GitHub: [victormelkor](https://github.com/victormelkor)
-
-Email: victor.melkor@gmail.com
+<p align="left"> <a href="https://linkedin.com/in/victormelkor" target="_blank"> <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" /> </a> <a href="mailto:seuemail@email.com" target="_blank"> <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" /> </a> </p>
